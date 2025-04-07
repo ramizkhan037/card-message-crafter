@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { MessageRecord } from '@/utils/csvParser';
@@ -14,6 +13,11 @@ interface MessageCardProps {
   showMetadata: boolean;
 }
 
+const containsArabic = (text: string): boolean => {
+  const arabicPattern = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+  return arabicPattern.test(text);
+};
+
 const MessageCard = ({ 
   message, 
   cardWidth, 
@@ -24,6 +28,15 @@ const MessageCard = ({
   showMetadata
 }: MessageCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  
+  const hasArabic = containsArabic(message.message);
+
+  const getFontFamily = () => {
+    if (selectedFont !== 'auto') {
+      return selectedFont === 'serif' ? 'Playfair Display, serif' : 'Raleway, sans-serif';
+    }
+    return hasArabic ? '"A Arslan Wessam A", sans-serif' : 'Rockwell-Bold, serif';
+  };
 
   const cardStyle = {
     width: `${cardWidth}mm`,
@@ -33,9 +46,10 @@ const MessageCard = ({
   };
   
   const textStyle = {
-    fontFamily: selectedFont === 'serif' ? 'Playfair Display, serif' : 'Raleway, sans-serif',
+    fontFamily: getFontFamily(),
     color: selectedColor,
     textAlign: textAlignment,
+    direction: hasArabic ? 'rtl' : 'ltr',
   };
 
   return (
@@ -51,7 +65,10 @@ const MessageCard = ({
       >
         <div className="flex-1 flex items-center justify-center">
           <p 
-            className="whitespace-pre-wrap break-words"
+            className={cn(
+              "whitespace-pre-wrap break-words",
+              hasArabic ? "arabic-text" : "english-text"
+            )}
             style={textStyle as React.CSSProperties}
           >
             {message.message}
@@ -70,15 +87,12 @@ const MessageCard = ({
   );
 };
 
-// Helper function to calculate appropriate font size based on message length and card dimensions
 const calculateFontSize = (message: string, width: number, height: number): string => {
   const area = width * height;
   const messageLength = message.length;
   
-  // Base size calculation
   let baseFontSize = Math.sqrt(area) / 10;
   
-  // Adjust based on message length
   if (messageLength > 100) {
     baseFontSize *= 0.8;
   } else if (messageLength > 200) {
@@ -87,7 +101,6 @@ const calculateFontSize = (message: string, width: number, height: number): stri
     baseFontSize *= 0.6;
   }
   
-  // Clamp to reasonable range
   baseFontSize = Math.min(Math.max(baseFontSize, 12), 24);
   
   return `${baseFontSize}px`;

@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
@@ -12,7 +13,7 @@ const Index = () => {
   const [lastUploadedFile, setLastUploadedFile] = useState<string | null>(null);
   const [cardWidth, setCardWidth] = useState(105); // Default to A6 width in mm
   const [cardHeight, setCardHeight] = useState(148); // Default to A6 height in mm
-  const [selectedFont, setSelectedFont] = useState('serif');
+  const [selectedFont, setSelectedFont] = useState('auto'); // Changed default to 'auto'
   const [selectedColor, setSelectedColor] = useState('#2D3047');
   const [textAlignment, setTextAlignment] = useState<'left' | 'center' | 'right'>('center');
   const [showMetadata, setShowMetadata] = useState(true);

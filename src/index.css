@@ -1,6 +1,25 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Raleway:wght@300;400;500;600&display=swap');
 
+/* Custom font imports */
+@font-face {
+  font-family: 'Rockwell-Bold';
+  src: url('/fonts/Rockwell-Bold.woff2') format('woff2'),
+       url('/fonts/Rockwell-Bold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'A Arslan Wessam A';
+  src: url('/fonts/AArslanWessamA.woff2') format('woff2'),
+       url('/fonts/AArslanWessamA.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -107,6 +126,16 @@
   .print-card {
     page-break-inside: avoid;
     break-inside: avoid;
+  }
+  
+  /* Arabic text styling */
+  .arabic-text {
+    font-family: 'A Arslan Wessam A', sans-serif;
+  }
+  
+  /* English text styling */
+  .english-text {
+    font-family: 'Rockwell-Bold', serif;
   }
   
   @media print {

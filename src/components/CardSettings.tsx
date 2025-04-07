@@ -19,7 +19,8 @@ import {
   AlignRight,
   Printer,
   Settings,
-  FileText
+  FileText,
+  Languages
 } from 'lucide-react';
 
 interface CardSettingsProps {
@@ -152,21 +153,31 @@ const CardSettings = ({
           
           <TabsContent value="style" className="space-y-6">
             <div className="space-y-2">
-              <Label>Font Family</Label>
+              <Label className="flex items-center gap-2">
+                <Languages className="h-4 w-4" />
+                Font Selection
+              </Label>
               <RadioGroup 
                 value={selectedFont} 
                 onValueChange={(value) => setSelectedFont(value)}
-                className="grid grid-cols-2 gap-2"
+                className="grid grid-cols-3 gap-2"
               >
                 <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="auto" id="auto" />
+                  <Label htmlFor="auto" className="text-sm">Auto Detect</Label>
+                </div>
+                <div className="flex items-center space-x-2">
                   <RadioGroupItem value="serif" id="serif" />
-                  <Label htmlFor="serif" className="font-serif text-lg">Serif</Label>
+                  <Label htmlFor="serif" className="font-serif text-sm">Serif</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="sans" id="sans" />
-                  <Label htmlFor="sans" className="font-sans text-lg">Sans-Serif</Label>
+                  <Label htmlFor="sans" className="font-sans text-sm">Sans-Serif</Label>
                 </div>
               </RadioGroup>
+              <p className="text-xs text-muted-foreground mt-1">
+                Auto detect will use Rockwell Bold for English and A Arslan Wessam A for Arabic
+              </p>
             </div>
             
             <div className="space-y-2">

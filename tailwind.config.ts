@@ -22,6 +22,8 @@ export default {
 			fontFamily: {
 				serif: ['Playfair Display', 'Georgia', 'serif'],
 				sans: ['Raleway', 'system-ui', 'sans-serif'],
+				rockwell: ['Rockwell-Bold', 'serif'],
+				arslan: ['"A Arslan Wessam A"', 'sans-serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',

@@ -44,7 +44,10 @@ const FileUploader = ({ onFileUploaded, isLoading }: FileUploaderProps) => {
   };
   
   const validateAndUploadFile = (file: File) => {
-    if (file.type !== 'text/csv') {
+    // Accept both CSV and Excel CSV MIME types
+    const validTypes = ['text/csv', 'application/vnd.ms-excel', 'application/csv', 'text/comma-separated-values'];
+    
+    if (!validTypes.includes(file.type) && !file.name.endsWith('.csv')) {
       toast({
         title: "Error",
         description: "Please upload a CSV file",
@@ -89,7 +92,7 @@ const FileUploader = ({ onFileUploaded, isLoading }: FileUploaderProps) => {
           <Upload className="h-10 w-10 text-muted-foreground mb-4" />
           
           <div className="space-y-2">
-            <h3 className="font-medium text-lg">Drag and drop your CSV file</h3>
+            <h3 className="font-medium text-lg">Drag and drop your Excel CSV file</h3>
             <p className="text-sm text-muted-foreground">or click to browse files</p>
           </div>
           
@@ -99,7 +102,7 @@ const FileUploader = ({ onFileUploaded, isLoading }: FileUploaderProps) => {
         <div className="flex justify-between items-center mt-4">
           <div className="flex items-center text-xs text-muted-foreground">
             <AlertCircle className="h-3 w-3 mr-1" />
-            <span>Only CSV files are supported</span>
+            <span>Upload Excel CSV files</span>
           </div>
           
           <Button 

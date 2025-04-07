@@ -15,6 +15,9 @@ export const parseCSV = (file: File): Promise<MessageRecord[]> => {
   return new Promise((resolve, reject) => {
     Papa.parse(file, {
       header: true,
+      skipEmptyLines: true,
+      dynamicTyping: false, // Keep everything as strings for Excel CSV
+      encoding: "UTF-8", // Handle encoding issues in Excel CSV
       complete: (results) => {
         // Generate an ID for each record if not present
         const records = results.data.map((record: any, index) => {
@@ -22,7 +25,8 @@ export const parseCSV = (file: File): Promise<MessageRecord[]> => {
             record.id = `msg-${index}`;
           }
           return record as MessageRecord;
-        });
+        }).filter((record: MessageRecord) => record.message); // Filter out rows without a message
+        
         resolve(records);
       },
       error: (error) => {

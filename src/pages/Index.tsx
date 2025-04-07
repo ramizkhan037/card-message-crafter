@@ -55,6 +55,21 @@ const Index = () => {
     window.print();
   };
 
+  const handleMessageUpdate = (id: string, updatedMessage: string) => {
+    setMessages(prevMessages => 
+      prevMessages.map(message => 
+        message.id === id 
+          ? { ...message, message: updatedMessage } 
+          : message
+      )
+    );
+    
+    toast({
+      title: "Message updated",
+      description: "Your changes have been saved.",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-cream">
       <header className="bg-white shadow-sm py-4 mb-8 no-print">
@@ -92,7 +107,7 @@ const Index = () => {
               <h2 className="text-xl font-serif text-navy mb-1">Message Preview</h2>
               <p className="text-sm text-muted-foreground">
                 {messages.length > 0 
-                  ? `Displaying ${messages.length} cards for printing` 
+                  ? `Displaying ${messages.length} cards for printing${messages.length > 0 ? " (Click the pencil icon to edit)" : ""}` 
                   : lastUploadedFile 
                     ? `No valid messages found in "${lastUploadedFile}". Please check the file format.`
                     : "Upload a CSV file to see your message cards"}
@@ -111,6 +126,7 @@ const Index = () => {
                     selectedColor={selectedColor}
                     textAlignment={textAlignment}
                     showMetadata={showMetadata}
+                    onMessageUpdate={handleMessageUpdate}
                   />
                 ))}
               </div>

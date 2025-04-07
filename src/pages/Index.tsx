@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
@@ -10,6 +9,7 @@ import { parseCSV, MessageRecord } from '@/utils/csvParser';
 const Index = () => {
   const [messages, setMessages] = useState<MessageRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [lastUploadedFile, setLastUploadedFile] = useState<string | null>(null);
   const [cardWidth, setCardWidth] = useState(105); // Default to A6 width in mm
   const [cardHeight, setCardHeight] = useState(148); // Default to A6 height in mm
   const [selectedFont, setSelectedFont] = useState('serif');
@@ -19,18 +19,30 @@ const Index = () => {
 
   const handleFileUpload = async (file: File) => {
     setIsLoading(true);
+    setLastUploadedFile(file.name);
+    
     try {
+      console.log('Processing file:', file.name);
       const parsedMessages = await parseCSV(file);
-      setMessages(parsedMessages);
-      toast({
-        title: "Success",
-        description: `Loaded ${parsedMessages.length} messages from the CSV file.`,
-      });
+      
+      if (parsedMessages.length === 0) {
+        toast({
+          title: "No messages found",
+          description: "The file was processed successfully, but no valid messages were found. Please check the file format.",
+          variant: "destructive",
+        });
+      } else {
+        setMessages(parsedMessages);
+        toast({
+          title: "Success",
+          description: `Loaded ${parsedMessages.length} messages from "${file.name}"`,
+        });
+      }
     } catch (error) {
       console.error('Error parsing CSV:', error);
       toast({
         title: "Error",
-        description: "Failed to parse the CSV file. Please check the format.",
+        description: "Failed to parse the file. Please check the format and try again.",
         variant: "destructive",
       });
     } finally {
@@ -80,7 +92,9 @@ const Index = () => {
               <p className="text-sm text-muted-foreground">
                 {messages.length > 0 
                   ? `Displaying ${messages.length} cards for printing` 
-                  : "Upload a CSV file to see your message cards"}
+                  : lastUploadedFile 
+                    ? `No valid messages found in "${lastUploadedFile}". Please check the file format.`
+                    : "Upload a CSV file to see your message cards"}
               </p>
             </div>
             
@@ -102,9 +116,13 @@ const Index = () => {
             ) : (
               <div className="flex flex-col items-center justify-center h-64 bg-white rounded-lg border-2 border-dashed border-gray-200 p-8">
                 <div className="text-center space-y-2">
-                  <h3 className="text-xl font-serif text-navy">No Messages Yet</h3>
+                  <h3 className="text-xl font-serif text-navy">
+                    {lastUploadedFile ? "No Valid Messages Found" : "No Messages Yet"}
+                  </h3>
                   <p className="text-muted-foreground">
-                    Upload a CSV file with your message data to get started.
+                    {lastUploadedFile 
+                      ? "Your file was processed but no valid messages were found. Make sure your CSV has a 'message' column."
+                      : "Upload a CSV file with your message data to get started."}
                   </p>
                   <p className="text-xs text-muted-foreground mt-8">
                     Your CSV should have columns for message, sender, recipient, and other optional fields.

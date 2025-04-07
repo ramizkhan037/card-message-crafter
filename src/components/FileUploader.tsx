@@ -44,17 +44,23 @@ const FileUploader = ({ onFileUploaded, isLoading }: FileUploaderProps) => {
   };
   
   const validateAndUploadFile = (file: File) => {
+    console.log('Validating file:', file.name, file.type);
     // Accept both CSV and Excel CSV MIME types
-    const validTypes = ['text/csv', 'application/vnd.ms-excel', 'application/csv', 'text/comma-separated-values'];
+    const validTypes = ['text/csv', 'application/vnd.ms-excel', 'application/csv', 'text/comma-separated-values', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
     
-    if (!validTypes.includes(file.type) && !file.name.endsWith('.csv')) {
+    if (!validTypes.includes(file.type) && !file.name.endsWith('.csv') && !file.name.endsWith('.xls') && !file.name.endsWith('.xlsx')) {
       toast({
         title: "Error",
-        description: "Please upload a CSV file",
+        description: "Please upload a CSV or Excel file",
         variant: "destructive",
       });
       return;
     }
+    
+    toast({
+      title: "Uploading",
+      description: `Processing ${file.name}...`,
+    });
     
     onFileUploaded(file);
   };
@@ -84,7 +90,7 @@ const FileUploader = ({ onFileUploaded, isLoading }: FileUploaderProps) => {
             id="file-upload" 
             type="file"
             className="hidden" 
-            accept=".csv"
+            accept=".csv,.xls,.xlsx"
             onChange={handleFileChange}
             disabled={isLoading}
           />
@@ -102,7 +108,7 @@ const FileUploader = ({ onFileUploaded, isLoading }: FileUploaderProps) => {
         <div className="flex justify-between items-center mt-4">
           <div className="flex items-center text-xs text-muted-foreground">
             <AlertCircle className="h-3 w-3 mr-1" />
-            <span>Upload Excel CSV files</span>
+            <span>Upload Excel CSV files (.csv, .xls, .xlsx)</span>
           </div>
           
           <Button 

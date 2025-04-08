@@ -15,7 +15,7 @@ interface MessageCardProps {
   selectedColor: string;
   textAlignment: 'left' | 'center' | 'right';
   showMetadata: boolean;
-  fontSize: number; // Added font size prop
+  fontSize: number;
   onMessageUpdate?: (id: string, updatedMessage: string) => void;
 }
 
@@ -41,12 +41,11 @@ const MessageCard = ({
   
   const hasArabic = containsArabic(message.message);
 
-  const getFontFamily = () => {
+  const getFontClass = () => {
     if (selectedFont === 'auto') {
-      // Use specific font names exactly as defined in the CSS
-      return hasArabic ? '"A Arslan Wessam A", sans-serif' : 'Rockwell-Bold, serif';
+      return hasArabic ? "arabic-text" : "english-text";
     } else {
-      return selectedFont === 'serif' ? 'Playfair Display, serif' : 'Raleway, sans-serif';
+      return selectedFont === 'serif' ? "font-serif" : "font-sans";
     }
   };
 
@@ -58,7 +57,6 @@ const MessageCard = ({
   };
   
   const textStyle = {
-    fontFamily: getFontFamily(),
     color: selectedColor,
     textAlign: textAlignment,
     direction: hasArabic ? 'rtl' : 'ltr',
@@ -75,6 +73,9 @@ const MessageCard = ({
     setEditedMessage(message.message);
     setIsEditing(false);
   };
+
+  console.log('Message font class:', getFontClass());
+  console.log('Has Arabic:', hasArabic);
 
   return (
     <div className="relative m-2 print-card">
@@ -93,7 +94,7 @@ const MessageCard = ({
               <p 
                 className={cn(
                   "whitespace-pre-wrap break-words",
-                  hasArabic ? "arabic-text" : "english-text"
+                  getFontClass()
                 )}
                 style={textStyle as React.CSSProperties}
               >
@@ -118,7 +119,10 @@ const MessageCard = ({
               <Textarea
                 value={editedMessage}
                 onChange={(e) => setEditedMessage(e.target.value)}
-                className="flex-1 resize-none border-none focus-visible:ring-0 p-0"
+                className={cn(
+                  "flex-1 resize-none border-none focus-visible:ring-0 p-0",
+                  getFontClass()
+                )}
                 style={{
                   ...textStyle as React.CSSProperties,
                   fontSize: `calc(${calculateFontSize(message.message, cardWidth, cardHeight, fontSize)} * 0.9)`,

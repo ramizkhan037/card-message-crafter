@@ -40,10 +40,12 @@ const MessageCard = ({
   const hasArabic = containsArabic(message.message);
 
   const getFontFamily = () => {
-    if (selectedFont !== 'auto') {
+    if (selectedFont === 'auto') {
+      // Use specific font names exactly as defined in the CSS
+      return hasArabic ? '"A Arslan Wessam A", sans-serif' : 'Rockwell-Bold, serif';
+    } else {
       return selectedFont === 'serif' ? 'Playfair Display, serif' : 'Raleway, sans-serif';
     }
-    return hasArabic ? '"A Arslan Wessam A", sans-serif' : 'Rockwell-Bold, serif';
   };
 
   const cardStyle = {

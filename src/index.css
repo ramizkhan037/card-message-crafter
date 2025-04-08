@@ -1,7 +1,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Raleway:wght@300;400;500;600&display=swap');
 
-/* Custom font imports */
+/* Custom font imports - make sure paths are correct */
 @font-face {
   font-family: 'Rockwell-Bold';
   src: url('/fonts/Rockwell-Bold.woff2') format('woff2'),
@@ -128,14 +128,14 @@
     break-inside: avoid;
   }
   
-  /* Arabic text styling */
+  /* Arabic text styling - use exact font name */
   .arabic-text {
-    font-family: 'A Arslan Wessam A', sans-serif;
+    font-family: 'A Arslan Wessam A', sans-serif !important;
   }
   
-  /* English text styling */
+  /* English text styling - use exact font name */
   .english-text {
-    font-family: 'Rockwell-Bold', serif;
+    font-family: 'Rockwell-Bold', serif !important;
   }
   
   @media print {

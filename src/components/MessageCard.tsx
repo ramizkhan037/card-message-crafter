@@ -5,7 +5,7 @@ import { MessageRecord } from '@/utils/csvParser';
 import { cn } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Pencil, Check, X } from 'lucide-react';
+import { Pencil, Check, X, Bug } from 'lucide-react';
 
 interface MessageCardProps {
   message: MessageRecord;
@@ -38,11 +38,16 @@ const MessageCard = ({
   const [isHovered, setIsHovered] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedMessage, setEditedMessage] = useState(message.message);
+  const [debugFont, setDebugFont] = useState<string | null>(null);
   
   const hasArabic = containsArabic(message.message);
 
   const getFontClass = () => {
-    if (selectedFont === 'auto') {
+    if (debugFont === 'rockwell') {
+      return "font-debug-rockwell";
+    } else if (debugFont === 'arslan') {
+      return "font-debug-arslan";
+    } else if (selectedFont === 'auto') {
       return hasArabic ? "arabic-text" : "english-text";
     } else {
       return selectedFont === 'serif' ? "font-serif" : "font-sans";
@@ -57,7 +62,7 @@ const MessageCard = ({
   };
   
   const textStyle = {
-    color: selectedColor,
+    color: debugFont ? 'inherit' : selectedColor,
     textAlign: textAlignment,
     direction: hasArabic ? 'rtl' : 'ltr',
   };
@@ -72,6 +77,16 @@ const MessageCard = ({
   const handleCancel = () => {
     setEditedMessage(message.message);
     setIsEditing(false);
+  };
+  
+  const toggleDebugFont = () => {
+    if (!debugFont) {
+      setDebugFont('rockwell');
+    } else if (debugFont === 'rockwell') {
+      setDebugFont('arslan');
+    } else {
+      setDebugFont(null);
+    }
   };
 
   console.log('Message font class:', getFontClass());
@@ -103,14 +118,29 @@ const MessageCard = ({
             </div>
             
             {onMessageUpdate && isHovered && (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="absolute top-2 right-2 p-1 h-8 w-8 rounded-full opacity-70 hover:opacity-100 no-print"
-                onClick={() => setIsEditing(true)}
-              >
-                <Pencil size={14} />
-              </Button>
+              <div className="absolute top-2 right-2 flex gap-2 no-print">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="p-1 h-8 w-8 rounded-full opacity-70 hover:opacity-100"
+                  onClick={() => setIsEditing(true)}
+                >
+                  <Pencil size={14} />
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className={cn(
+                    "p-1 h-8 w-8 rounded-full opacity-70 hover:opacity-100",
+                    debugFont && "bg-muted"
+                  )}
+                  onClick={toggleDebugFont}
+                  title="Toggle font debugging"
+                >
+                  <Bug size={14} />
+                </Button>
+              </div>
             )}
           </>
         ) : (
@@ -146,6 +176,11 @@ const MessageCard = ({
             {message.sender && <p>From: {message.sender}</p>}
             {message.recipient && <p>To: {message.recipient}</p>}
             {message.orderNumber && <p className="text-[10px] mt-1 opacity-50">Order: {message.orderNumber}</p>}
+            {debugFont && (
+              <p className="text-[10px] mt-1 font-bold">
+                Font debug: {debugFont === 'rockwell' ? 'Rockwell Bold' : 'A Arslan Wessam A'}
+              </p>
+            )}
           </div>
         )}
       </Card>
@@ -176,3 +211,4 @@ const calculateFontSize = (message: string, width: number, height: number, fontS
 };
 
 export default MessageCard;
+

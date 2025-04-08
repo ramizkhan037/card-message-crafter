@@ -1,34 +1,42 @@
 
-# Font Download Instructions
+# Font Upload Instructions
 
 To use the custom fonts with this application:
 
-1. Download the following font files:
+## If you have TrueType (.ttf) fonts:
 
-   - For Rockwell Bold:
+1. Convert your TrueType (.ttf) fonts to web formats (WOFF and WOFF2) using one of these online converters:
+   - [Transfonter](https://transfonter.org/)
+   - [Font Squirrel Generator](https://www.fontsquirrel.com/tools/webfont-generator)
+   - [Online Font Converter](https://onlinefontconverter.com/)
+
+2. When converting:
+   - Select both WOFF and WOFF2 output formats
+   - Set optimal compression
+   - Use the exact output filenames:
      - Rockwell-Bold.woff
      - Rockwell-Bold.woff2
-     
-   - For A Arslan Wessam A:
      - AArslanWessamA.woff
      - AArslanWessamA.woff2
 
-2. Place these files in the `public/fonts` directory of the application.
+3. After conversion, place these files in the `public/fonts` directory of the application.
 
-3. If you have the fonts in TTF or OTF format, you can convert them to WOFF and WOFF2 formats using online converters like:
-   - [Transfonter](https://transfonter.org/)
-   - [Font Squirrel Generator](https://www.fontsquirrel.com/tools/webfont-generator)
-
-4. Make sure the font file names match EXACTLY with these names:
-   - Rockwell-Bold.woff
-   - Rockwell-Bold.woff2
-   - AArslanWessamA.woff
-   - AArslanWessamA.woff2
-
-5. To verify that fonts are loading correctly:
+4. To verify that fonts are loading correctly:
    - Open the browser console (F12)
    - Check the Network tab to ensure font files are being found
-   - If you see 404 errors for font files, double-check file names and paths
+   - Look for font debugging messages in the console
+
+## Font Testing
+
+The application includes font debugging classes you can activate in the console:
+
+```javascript
+// Test the Rockwell font
+document.querySelector('.card p').classList.add('font-debug-rockwell');
+
+// Test the Arslan font
+document.querySelector('.card p').classList.add('font-debug-arslan');
+```
 
 **Important Note**: 
-The web application cannot include font files directly due to licensing restrictions. You must download and add these fonts to your installation manually.
+When using custom fonts, make sure the filenames match EXACTLY what the application is looking for. Font names are case-sensitive.

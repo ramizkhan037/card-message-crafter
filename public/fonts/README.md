@@ -20,6 +20,22 @@ If you have TrueType (.ttf) files, you need to convert them to web formats:
    - AArslanWessamA.woff
    - AArslanWessamA.woff2
 
+## Using The Converter:
+
+Here's a step-by-step guide using Transfonter:
+
+1. Go to [Transfonter.org](https://transfonter.org/)
+2. Click "Add fonts" and select your TTF files
+3. In the options:
+   - Check "WOFF" and "WOFF2" format options
+   - Set "Base64 encode" to OFF
+   - Set "With fallbacks" to OFF
+   - Keep "Subset" set to "No subsetting"
+4. Click "Convert"
+5. Download the ZIP file
+6. Extract and rename the files as needed
+7. Place them in this directory
+
 ## Font Not Displaying?
 
 If the custom fonts aren't showing:
@@ -28,12 +44,11 @@ If the custom fonts aren't showing:
 2. Check that filenames match EXACTLY (case-sensitive)
 3. Check browser console (F12 > Network tab) for 404 errors
 4. Try clearing your browser cache and refresh
-5. Note that the app expects web font formats (WOFF/WOFF2), not TTF
+5. Use the font debugging tools in the UI (bug icon when hovering over a card)
+6. Check font loading status in the UI (warning icon when hovering over a card)
 
-## Font Debugging:
+## Tool for Testing:
 
-The application includes special CSS classes for troubleshooting:
-- `font-debug-rockwell` - Will apply Rockwell font with green color
-- `font-debug-arslan` - Will apply Arslan font with blue color
-
-You can try these in your browser console to test if fonts are loading correctly.
+The application includes special debugging tools for troubleshooting:
+- Bug icon: Cycles through font styles to test appearance
+- Warning icon: Shows font loading status and details

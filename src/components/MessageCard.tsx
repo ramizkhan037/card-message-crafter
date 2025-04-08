@@ -5,7 +5,7 @@ import { MessageRecord } from '@/utils/csvParser';
 import { cn } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Pencil, Check, X, Bug } from 'lucide-react';
+import { Pencil, Check, X, Bug, FileWarning } from 'lucide-react';
 
 interface MessageCardProps {
   message: MessageRecord;
@@ -24,6 +24,24 @@ const containsArabic = (text: string): boolean => {
   return arabicPattern.test(text);
 };
 
+// Check if fonts are loaded
+const checkFontLoading = (): { rockwellLoaded: boolean, arslanLoaded: boolean } => {
+  // This is not 100% accurate but can help with debugging
+  let rockwellLoaded = false;
+  let arslanLoaded = false;
+  
+  document.fonts.forEach(font => {
+    if (font.family.includes('Rockwell') && font.loaded) {
+      rockwellLoaded = true;
+    }
+    if ((font.family.includes('Arslan') || font.family.includes('AArslan')) && font.loaded) {
+      arslanLoaded = true;
+    }
+  });
+  
+  return { rockwellLoaded, arslanLoaded };
+};
+
 const MessageCard = ({ 
   message, 
   cardWidth, 
@@ -39,8 +57,10 @@ const MessageCard = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editedMessage, setEditedMessage] = useState(message.message);
   const [debugFont, setDebugFont] = useState<string | null>(null);
+  const [showDebugInfo, setShowDebugInfo] = useState(false);
   
   const hasArabic = containsArabic(message.message);
+  const { rockwellLoaded, arslanLoaded } = checkFontLoading();
 
   const getFontClass = () => {
     if (debugFont === 'rockwell') {
@@ -88,9 +108,10 @@ const MessageCard = ({
       setDebugFont(null);
     }
   };
-
-  console.log('Message font class:', getFontClass());
-  console.log('Has Arabic:', hasArabic);
+  
+  const toggleDebugInfo = () => {
+    setShowDebugInfo(!showDebugInfo);
+  };
 
   return (
     <div className="relative m-2 print-card">
@@ -136,9 +157,22 @@ const MessageCard = ({
                     debugFont && "bg-muted"
                   )}
                   onClick={toggleDebugFont}
-                  title="Toggle font debugging"
+                  title="Toggle font debugging (cycle through different fonts)"
                 >
                   <Bug size={14} />
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className={cn(
+                    "p-1 h-8 w-8 rounded-full opacity-70 hover:opacity-100",
+                    showDebugInfo && "bg-muted"
+                  )}
+                  onClick={toggleDebugInfo}
+                  title="Toggle font loading status"
+                >
+                  <FileWarning size={14} />
                 </Button>
               </div>
             )}
@@ -183,6 +217,34 @@ const MessageCard = ({
             )}
           </div>
         )}
+        
+        {showDebugInfo && (
+          <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-white text-xs p-2 no-print">
+            <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
+              <span>Font type:</span>
+              <span>{hasArabic ? 'Arabic detected' : 'English'}</span>
+              
+              <span>Selected font:</span>
+              <span>{selectedFont}</span>
+              
+              <span>Rockwell loaded:</span>
+              <span className={rockwellLoaded ? 'text-green-400' : 'text-red-400'}>
+                {rockwellLoaded ? 'Yes' : 'No'}
+              </span>
+              
+              <span>Arslan loaded:</span>
+              <span className={arslanLoaded ? 'text-green-400' : 'text-red-400'}>
+                {arslanLoaded ? 'Yes' : 'No'}
+              </span>
+              
+              <span>Font class:</span>
+              <span>{getFontClass()}</span>
+              
+              <span>Card size:</span>
+              <span>{cardWidth}×{cardHeight}mm</span>
+            </div>
+          </div>
+        )}
       </Card>
     </div>
   );
@@ -211,4 +273,3 @@ const calculateFontSize = (message: string, width: number, height: number, fontS
 };
 
 export default MessageCard;
-

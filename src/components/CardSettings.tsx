@@ -1,4 +1,3 @@
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
@@ -22,7 +21,8 @@ import {
   FileText,
   Languages,
   Type
-} from 'lucide-react';
+} from 'lucide-react";
+import FontUploader from "./FontUploader";
 
 interface CardSettingsProps {
   cardWidth: number;
@@ -59,7 +59,6 @@ const CardSettings = ({
   setFontSize,
   onPrint
 }: CardSettingsProps) => {
-  // Preset card sizes in mm
   const presetSizes = [
     { name: "A6 Folded", width: 105, height: 148 },
     { name: "A5 Folded", width: 148, height: 210 },
@@ -78,9 +77,10 @@ const CardSettings = ({
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="size">
-          <TabsList className="grid w-full grid-cols-3 mb-4">
+          <TabsList className="grid w-full grid-cols-4 mb-4">
             <TabsTrigger value="size">Size</TabsTrigger>
             <TabsTrigger value="style">Style</TabsTrigger>
+            <TabsTrigger value="fonts">Fonts</TabsTrigger>
             <TabsTrigger value="print">Print</TabsTrigger>
           </TabsList>
           
@@ -159,34 +159,6 @@ const CardSettings = ({
           <TabsContent value="style" className="space-y-6">
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
-                <Languages className="h-4 w-4" />
-                Font Selection
-              </Label>
-              <RadioGroup 
-                value={selectedFont} 
-                onValueChange={(value) => setSelectedFont(value)}
-                className="grid grid-cols-3 gap-2"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="auto" id="auto" />
-                  <Label htmlFor="auto" className="text-sm">Auto Detect</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="serif" id="serif" />
-                  <Label htmlFor="serif" className="font-serif text-sm">Serif</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="sans" id="sans" />
-                  <Label htmlFor="sans" className="font-sans text-sm">Sans-Serif</Label>
-                </div>
-              </RadioGroup>
-              <p className="text-xs text-muted-foreground mt-1">
-                Auto detect will use Rockwell Bold for English and A Arslan Wessam A for Arabic
-              </p>
-            </div>
-            
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2">
                 <Type className="h-4 w-4" />
                 Font Size Adjustment
               </Label>
@@ -256,6 +228,38 @@ const CardSettings = ({
               />
               <Label htmlFor="show-metadata">Show sender/recipient info</Label>
             </div>
+          </TabsContent>
+          
+          <TabsContent value="fonts" className="space-y-4">
+            <div className="space-y-2 mb-4">
+              <Label className="flex items-center gap-2">
+                <Languages className="h-4 w-4" />
+                Font Selection
+              </Label>
+              <RadioGroup 
+                value={selectedFont} 
+                onValueChange={(value) => setSelectedFont(value)}
+                className="grid grid-cols-3 gap-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="auto" id="auto" />
+                  <Label htmlFor="auto" className="text-sm">Auto Detect</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="serif" id="serif" />
+                  <Label htmlFor="serif" className="font-serif text-sm">Serif</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="sans" id="sans" />
+                  <Label htmlFor="sans" className="font-sans text-sm">Sans-Serif</Label>
+                </div>
+              </RadioGroup>
+              <p className="text-xs text-muted-foreground mt-1">
+                Auto detect will use Rockwell Bold for English and A Arslan Wessam A for Arabic
+              </p>
+            </div>
+            
+            <FontUploader />
           </TabsContent>
           
           <TabsContent value="print" className="space-y-4">

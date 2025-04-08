@@ -13,10 +13,11 @@ const Index = () => {
   const [lastUploadedFile, setLastUploadedFile] = useState<string | null>(null);
   const [cardWidth, setCardWidth] = useState(105); // Default to A6 width in mm
   const [cardHeight, setCardHeight] = useState(148); // Default to A6 height in mm
-  const [selectedFont, setSelectedFont] = useState('auto'); // Changed default to 'auto'
+  const [selectedFont, setSelectedFont] = useState('auto'); // Default to auto detect
   const [selectedColor, setSelectedColor] = useState('#2D3047');
   const [textAlignment, setTextAlignment] = useState<'left' | 'center' | 'right'>('center');
   const [showMetadata, setShowMetadata] = useState(true);
+  const [fontSize, setFontSize] = useState(100); // Default font size 100%
 
   const handleFileUpload = async (file: File) => {
     setIsLoading(true);
@@ -97,6 +98,8 @@ const Index = () => {
               setTextAlignment={setTextAlignment}
               showMetadata={showMetadata}
               setShowMetadata={setShowMetadata}
+              fontSize={fontSize}
+              setFontSize={setFontSize}
               onPrint={handlePrint}
             />
           </div>
@@ -126,6 +129,7 @@ const Index = () => {
                     selectedColor={selectedColor}
                     textAlignment={textAlignment}
                     showMetadata={showMetadata}
+                    fontSize={fontSize}
                     onMessageUpdate={handleMessageUpdate}
                   />
                 ))}

@@ -20,7 +20,8 @@ import {
   Printer,
   Settings,
   FileText,
-  Languages
+  Languages,
+  Type
 } from 'lucide-react';
 
 interface CardSettingsProps {
@@ -36,6 +37,8 @@ interface CardSettingsProps {
   setTextAlignment: (alignment: 'left' | 'center' | 'right') => void;
   showMetadata: boolean;
   setShowMetadata: (show: boolean) => void;
+  fontSize: number;
+  setFontSize: (size: number) => void;
   onPrint: () => void;
 }
 
@@ -52,6 +55,8 @@ const CardSettings = ({
   setTextAlignment,
   showMetadata,
   setShowMetadata,
+  fontSize,
+  setFontSize,
   onPrint
 }: CardSettingsProps) => {
   // Preset card sizes in mm
@@ -177,6 +182,26 @@ const CardSettings = ({
               </RadioGroup>
               <p className="text-xs text-muted-foreground mt-1">
                 Auto detect will use Rockwell Bold for English and A Arslan Wessam A for Arabic
+              </p>
+            </div>
+            
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Type className="h-4 w-4" />
+                Font Size Adjustment
+              </Label>
+              <div className="flex gap-2 items-center">
+                <Slider
+                  value={[fontSize]}
+                  min={70}
+                  max={150}
+                  step={5}
+                  onValueChange={(value) => setFontSize(value[0])}
+                />
+                <span className="text-sm w-14 text-center">{fontSize}%</span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Adjust relative font size (100% is default)
               </p>
             </div>
             

@@ -15,6 +15,7 @@ interface MessageCardProps {
   selectedColor: string;
   textAlignment: 'left' | 'center' | 'right';
   showMetadata: boolean;
+  fontSize: number; // Added font size prop
   onMessageUpdate?: (id: string, updatedMessage: string) => void;
 }
 
@@ -31,6 +32,7 @@ const MessageCard = ({
   selectedColor,
   textAlignment,
   showMetadata,
+  fontSize,
   onMessageUpdate
 }: MessageCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -51,7 +53,7 @@ const MessageCard = ({
   const cardStyle = {
     width: `${cardWidth}mm`,
     height: `${cardHeight}mm`,
-    fontSize: calculateFontSize(message.message, cardWidth, cardHeight),
+    fontSize: calculateFontSize(message.message, cardWidth, cardHeight, fontSize),
     lineHeight: '1.5',
   };
   
@@ -119,7 +121,7 @@ const MessageCard = ({
                 className="flex-1 resize-none border-none focus-visible:ring-0 p-0"
                 style={{
                   ...textStyle as React.CSSProperties,
-                  fontSize: `calc(${calculateFontSize(message.message, cardWidth, cardHeight)} * 0.9)`,
+                  fontSize: `calc(${calculateFontSize(message.message, cardWidth, cardHeight, fontSize)} * 0.9)`,
                   minHeight: '80px'
                 }}
               />
@@ -147,7 +149,7 @@ const MessageCard = ({
   );
 };
 
-const calculateFontSize = (message: string, width: number, height: number): string => {
+const calculateFontSize = (message: string, width: number, height: number, fontSizePercentage: number = 100): string => {
   const area = width * height;
   const messageLength = message.length;
   
@@ -160,6 +162,9 @@ const calculateFontSize = (message: string, width: number, height: number): stri
   } else if (messageLength > 300) {
     baseFontSize *= 0.6;
   }
+  
+  // Apply font size adjustment
+  baseFontSize = baseFontSize * (fontSizePercentage / 100);
   
   baseFontSize = Math.min(Math.max(baseFontSize, 12), 24);
   

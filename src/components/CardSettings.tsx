@@ -21,9 +21,7 @@ import {
   Settings,
   FileText,
   Languages,
-  Type,
-  LineHeight,
-  LetterSpacing
+  Type
 } from "lucide-react";
 
 interface CardSettingsProps {
@@ -215,7 +213,7 @@ const CardSettings = ({
                 {/* Line Height */}
                 <div className="grid grid-cols-5 gap-2 items-center">
                   <Label className="col-span-2 flex items-center gap-1">
-                    <LineHeight className="h-3.5 w-3.5" /> Line Height
+                    <Type className="h-3.5 w-3.5" /> Line Height
                   </Label>
                   <div className="col-span-2">
                     <Input
@@ -234,7 +232,7 @@ const CardSettings = ({
                 {/* Letter Spacing */}
                 <div className="grid grid-cols-5 gap-2 items-center">
                   <Label className="col-span-2 flex items-center gap-1">
-                    <LetterSpacing className="h-3.5 w-3.5" /> Letter Spacing
+                    <Type className="h-3.5 w-3.5" /> Letter Spacing
                   </Label>
                   <div className="col-span-2">
                     <Input

@@ -4,14 +4,14 @@ import { Upload, FileDown, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { downloadSampleCSV } from '@/utils/csvParser';
+import { downloadSampleCSV, parseCSV, MessageRecord } from '@/utils/csvParser';
 
 interface FileUploaderProps {
-  onFileUploaded: (file: File) => void;
-  isLoading: boolean;
+  onUpload: (messages: MessageRecord[]) => void;
+  isLoading?: boolean;
 }
 
-const FileUploader = ({ onFileUploaded, isLoading }: FileUploaderProps) => {
+const FileUploader = ({ onUpload, isLoading = false }: FileUploaderProps) => {
   const { toast } = useToast();
   const [dragActive, setDragActive] = useState(false);
   
@@ -43,7 +43,7 @@ const FileUploader = ({ onFileUploaded, isLoading }: FileUploaderProps) => {
     }
   };
   
-  const validateAndUploadFile = (file: File) => {
+  const validateAndUploadFile = async (file: File) => {
     console.log('Validating file:', file.name, file.type);
     // Accept both CSV and Excel CSV MIME types
     const validTypes = ['text/csv', 'application/vnd.ms-excel', 'application/csv', 'text/comma-separated-values', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
@@ -62,7 +62,17 @@ const FileUploader = ({ onFileUploaded, isLoading }: FileUploaderProps) => {
       description: `Processing ${file.name}...`,
     });
     
-    onFileUploaded(file);
+    try {
+      const messages = await parseCSV(file);
+      onUpload(messages);
+    } catch (error) {
+      console.error('Error parsing CSV:', error);
+      toast({
+        title: "Error",
+        description: "Failed to parse the file. Please check the format and try again.",
+        variant: "destructive",
+      });
+    }
   };
   
   const handleSampleDownload = () => {

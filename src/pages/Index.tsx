@@ -18,37 +18,24 @@ const Index = () => {
   const [textAlignment, setTextAlignment] = useState<'left' | 'center' | 'right'>('center');
   const [showMetadata, setShowMetadata] = useState(true);
   const [fontSize, setFontSize] = useState(100); // Default font size 100%
+  const [lineHeight, setLineHeight] = useState(1.5); // Default line height
+  const [letterSpacing, setLetterSpacing] = useState(0); // Default letter spacing
 
-  const handleFileUpload = async (file: File) => {
-    setIsLoading(true);
-    setLastUploadedFile(file.name);
+  const handleFileUpload = (parsedMessages: MessageRecord[]) => {
+    setIsLoading(false);
     
-    try {
-      console.log('Processing file:', file.name);
-      const parsedMessages = await parseCSV(file);
-      
-      if (parsedMessages.length === 0) {
-        toast({
-          title: "No messages found",
-          description: "The file was processed successfully, but no valid messages were found. Please check the file format.",
-          variant: "destructive",
-        });
-      } else {
-        setMessages(parsedMessages);
-        toast({
-          title: "Success",
-          description: `Loaded ${parsedMessages.length} messages from "${file.name}"`,
-        });
-      }
-    } catch (error) {
-      console.error('Error parsing CSV:', error);
+    if (parsedMessages.length === 0) {
       toast({
-        title: "Error",
-        description: "Failed to parse the file. Please check the format and try again.",
+        title: "No messages found",
+        description: "The file was processed successfully, but no valid messages were found. Please check the file format.",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
+    } else {
+      setMessages(parsedMessages);
+      toast({
+        title: "Success",
+        description: `Loaded ${parsedMessages.length} messages`,
+      });
     }
   };
 
@@ -84,7 +71,7 @@ const Index = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Left column - Controls */}
           <div className="space-y-6 no-print">
-            <FileUploader onFileUploaded={handleFileUpload} isLoading={isLoading} />
+            <FileUploader onUpload={handleFileUpload} isLoading={isLoading} />
             <CardSettings 
               cardWidth={cardWidth}
               setCardWidth={setCardWidth}
@@ -100,6 +87,10 @@ const Index = () => {
               setShowMetadata={setShowMetadata}
               fontSize={fontSize}
               setFontSize={setFontSize}
+              lineHeight={lineHeight}
+              setLineHeight={setLineHeight}
+              letterSpacing={letterSpacing}
+              setLetterSpacing={setLetterSpacing}
               onPrint={handlePrint}
             />
           </div>
@@ -130,6 +121,8 @@ const Index = () => {
                     textAlignment={textAlignment}
                     showMetadata={showMetadata}
                     fontSize={fontSize}
+                    lineHeight={lineHeight}
+                    letterSpacing={letterSpacing}
                     onMessageUpdate={handleMessageUpdate}
                   />
                 ))}

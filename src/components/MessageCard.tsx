@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { MessageRecord } from '@/utils/csvParser';
@@ -16,8 +15,8 @@ interface MessageCardProps {
   textAlignment: 'left' | 'center' | 'right';
   showMetadata: boolean;
   fontSize: number;
-  lineHeight: number; // Added line height property
-  letterSpacing: number; // Added letter spacing property
+  lineHeight: number;
+  letterSpacing: number;
   onMessageUpdate?: (id: string, updatedMessage: string) => void;
 }
 
@@ -62,16 +61,12 @@ const processTextWithMixedLanguages = (text: string): JSX.Element => {
   return (
     <>
       {segments.map((segment, index) => {
-        // Add spacing between different language segments
+        // Always add spacing between different language segments
         const needsSpaceBefore = index > 0 && 
-          segments[index-1].type !== segment.type && 
-          !segment.text.startsWith(' ') && 
-          !segments[index-1].text.endsWith(' ');
+          segments[index-1].type !== segment.type;
           
         const needsSpaceAfter = index < segments.length - 1 && 
-          segments[index+1].type !== segment.type && 
-          !segment.text.endsWith(' ') && 
-          !segments[index+1].text.startsWith(' ');
+          segments[index+1].type !== segment.type;
         
         return (
           <span 
@@ -80,8 +75,8 @@ const processTextWithMixedLanguages = (text: string): JSX.Element => {
             dir={segment.type === 'arabic' ? 'rtl' : 'ltr'}
             style={{ 
               display: 'inline-block',
-              marginRight: needsSpaceAfter ? '0.25em' : 0,
-              marginLeft: needsSpaceBefore ? '0.25em' : 0
+              marginRight: needsSpaceAfter ? '0.35em' : 0,
+              marginLeft: needsSpaceBefore ? '0.35em' : 0
             }}
           >
             {segment.text}
@@ -119,8 +114,8 @@ const MessageCard = ({
   textAlignment,
   showMetadata,
   fontSize,
-  lineHeight = 1.5, // Default line height
-  letterSpacing = 0, // Default letter spacing 
+  lineHeight,
+  letterSpacing,
   onMessageUpdate
 }: MessageCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -213,10 +208,10 @@ const MessageCard = ({
   };
 
   return (
-    <div className="relative m-2 print-card">
+    <div className="print-card">
       <Card 
         className={cn(
-          "flex flex-col p-6 bg-white card-shadow transition-all duration-200 ease-in-out print:shadow-none print:border-none",
+          "flex flex-col p-6 bg-white transition-all duration-200 ease-in-out print:shadow-none print:border-none",
           isHovered && "shadow-lg scale-[1.01]"
         )}
         style={cardStyle}
@@ -242,7 +237,7 @@ const MessageCard = ({
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="p-1 h-8 w-8 rounded-full opacity-70 hover:opacity-100"
+                  className="p-1 h-8 w-8 rounded-full bg-white/90 shadow-sm hover:bg-white"
                   onClick={() => setIsEditing(true)}
                 >
                   <Pencil size={14} />
@@ -252,7 +247,7 @@ const MessageCard = ({
                   variant="outline" 
                   size="sm" 
                   className={cn(
-                    "p-1 h-8 w-8 rounded-full opacity-70 hover:opacity-100",
+                    "p-1 h-8 w-8 rounded-full bg-white/90 shadow-sm hover:bg-white",
                     debugFont && "bg-muted"
                   )}
                   onClick={toggleDebugFont}
@@ -265,7 +260,7 @@ const MessageCard = ({
                   variant="outline" 
                   size="sm" 
                   className={cn(
-                    "p-1 h-8 w-8 rounded-full opacity-70 hover:opacity-100",
+                    "p-1 h-8 w-8 rounded-full bg-white/90 shadow-sm hover:bg-white",
                     showDebugInfo && "bg-muted"
                   )}
                   onClick={toggleDebugInfo}
@@ -292,7 +287,7 @@ const MessageCard = ({
                   minHeight: '80px'
                 }}
               />
-              <div className="flex justify-end gap-2 mt-2 no-print">
+              <div className="flex justify-end gap-2 mt-4 no-print">
                 <Button variant="outline" size="sm" onClick={handleCancel}>
                   <X size={14} className="mr-1" /> Cancel
                 </Button>
@@ -305,7 +300,7 @@ const MessageCard = ({
         )}
         
         {showMetadata && (message.sender || message.recipient) && !isEditing && (
-          <div className="mt-4 pt-2 border-t border-gray-100 text-xs text-muted-foreground no-print">
+          <div className="mt-4 pt-2 border-t border-slate-100 text-xs text-slate-500 no-print">
             {message.sender && <p>From: {message.sender}</p>}
             {message.recipient && <p>To: {message.recipient}</p>}
             {message.orderNumber && <p className="text-[10px] mt-1 opacity-50">Order: {message.orderNumber}</p>}

@@ -6,6 +6,7 @@ import CardSettings from './components/CardSettings';
 import FileUploader from './components/FileUploader';
 import { MessageRecord } from './utils/csvParser';
 import { Toaster } from './components/ui/toaster';
+import { Separator } from './components/ui/separator';
 
 function App() {
   const [cardWidth, setCardWidth] = useState(105);
@@ -35,15 +36,17 @@ function App() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col gap-8">
-        <header className="text-center">
-          <h1 className="text-3xl font-bold">Customizable Message Cards</h1>
-          <p className="text-muted-foreground mt-2">Create, customize, and print your message cards</p>
-        </header>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-[350px_1fr] gap-6">
-          <div className="space-y-6">
+    <div className="min-h-screen bg-slate-50">
+      <header className="bg-white shadow-sm py-6 mb-6 no-print">
+        <div className="container mx-auto px-4">
+          <h1 className="text-3xl md:text-4xl font-serif font-semibold text-slate-800">Message Cards Studio</h1>
+          <p className="text-slate-500 mt-1">Create beautiful message cards for your customers</p>
+        </div>
+      </header>
+      
+      <div className="container mx-auto px-4 pb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-[350px_1fr] gap-8">
+          <div className="space-y-6 no-print">
             <div className="sticky top-4">
               <CardSettings 
                 cardWidth={cardWidth}
@@ -68,7 +71,7 @@ function App() {
               />
               
               {messages.length === 0 && (
-                <div className="mt-4">
+                <div className="mt-6">
                   <FileUploader onUpload={handleMessagesUpload} />
                 </div>
               )}
@@ -78,13 +81,19 @@ function App() {
           <div>
             {messages.length > 0 ? (
               <>
-                <div className="no-print mb-4 flex justify-between items-center">
-                  <h2 className="text-xl font-medium">Your Message Cards</h2>
-                  <div className="flex gap-2">
+                <div className="bg-white rounded-lg p-6 shadow-sm mb-6 no-print">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h2 className="text-xl font-medium text-slate-800">Your Message Cards</h2>
+                      <p className="text-sm text-slate-500 mt-1">
+                        Displaying {messages.length} cards for printing
+                      </p>
+                    </div>
                     <FileUploader onUpload={handleMessagesUpload} />
                   </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {messages.map((message) => (
                     <MessageCard
                       key={message.id}
@@ -104,16 +113,27 @@ function App() {
                 </div>
               </>
             ) : (
-              <div className="bg-secondary/30 rounded-lg p-8 text-center">
-                <h2 className="text-xl font-medium mb-4">No Message Cards Yet</h2>
-                <p className="text-muted-foreground mb-6">
+              <div className="bg-white rounded-lg shadow-sm p-8 text-center border border-slate-200">
+                <h2 className="text-xl font-medium text-slate-800 mb-3">No Message Cards Yet</h2>
+                <p className="text-slate-500 mb-6 max-w-md mx-auto">
                   Upload a CSV file to get started. The file should contain columns for 'message', 'sender', and 'recipient'.
                 </p>
+                <img 
+                  src="/placeholder.svg" 
+                  alt="Upload illustration" 
+                  className="w-32 h-32 mx-auto opacity-50" 
+                />
               </div>
             )}
           </div>
         </div>
       </div>
+      
+      <footer className="bg-slate-800 text-white py-6 mt-8 no-print">
+        <div className="container mx-auto px-4 text-center">
+          <p className="text-slate-300">&copy; {new Date().getFullYear()} Message Cards Studio | All rights reserved</p>
+        </div>
+      </footer>
       <Toaster />
     </div>
   );

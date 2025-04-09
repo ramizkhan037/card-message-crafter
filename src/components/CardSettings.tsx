@@ -23,7 +23,6 @@ import {
   Languages,
   Type
 } from "lucide-react";
-import FontUploader from "./FontUploader";
 
 interface CardSettingsProps {
   cardWidth: number;
@@ -232,7 +231,7 @@ const CardSettings = ({
           </TabsContent>
           
           <TabsContent value="fonts" className="space-y-4">
-            <div className="space-y-2 mb-4">
+            <div className="space-y-2">
               <Label className="flex items-center gap-2">
                 <Languages className="h-4 w-4" />
                 Font Selection
@@ -260,7 +259,21 @@ const CardSettings = ({
               </p>
             </div>
             
-            <FontUploader />
+            <div className="bg-secondary/50 p-4 rounded-lg mt-4">
+              <div>
+                <h3 className="text-base font-medium">Font Information</h3>
+                <p className="text-sm text-muted-foreground">
+                  This application uses the following fonts:
+                </p>
+                <ul className="list-disc pl-5 mt-2 space-y-1 text-sm">
+                  <li><span className="font-medium">Rockwell Bold</span>: Used for English text</li>
+                  <li><span className="font-medium">A Arslan Wessam A</span>: Used for Arabic text</li>
+                </ul>
+                <p className="text-sm text-muted-foreground mt-3">
+                  These fonts are automatically loaded from the public/fonts directory
+                </p>
+              </div>
+            </div>
           </TabsContent>
           
           <TabsContent value="print" className="space-y-4">

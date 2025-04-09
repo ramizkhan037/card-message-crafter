@@ -103,16 +103,6 @@
     unicode-bidi: isolate;
   }
   
-  /* Improved mixed language container */
-  .mixed-language-container {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 0.35em;
-  }
-  
   /* Debugging font classes with clear visual indicators */
   .font-debug-rockwell {
     font-family: 'Rockwell-Bold', 'Playfair Display', Georgia, serif !important;

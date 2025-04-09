@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { MessageRecord } from '@/utils/csvParser';
@@ -26,9 +27,9 @@ const containsArabic = (text: string): boolean => {
   return arabicPattern.test(text);
 };
 
-// Process mixed text to wrap segments in appropriate language spans
+// Process mixed text to properly handle Arabic and English segments
 const processTextWithMixedLanguages = (text: string): JSX.Element => {
-  // Split text into Arabic and non-Arabic segments
+  // Split text into segments that need to be rendered separately
   const segments = [];
   let currentSegment = '';
   let currentType = null;
@@ -57,16 +58,15 @@ const processTextWithMixedLanguages = (text: string): JSX.Element => {
     segments.push({ type: currentType, text: currentSegment });
   }
   
-  // Add a space character at language boundaries for better readability
   return (
     <>
       {segments.map((segment, index) => {
-        // Always add spacing between different language segments
-        const needsSpaceBefore = index > 0 && 
-          segments[index-1].type !== segment.type;
-          
-        const needsSpaceAfter = index < segments.length - 1 && 
-          segments[index+1].type !== segment.type;
+        // Only add a space between different language segments
+        // Don't add spaces between segments of the same language
+        const needsSpace = index > 0 && 
+          segments[index-1].type !== segment.type && 
+          !segment.text.startsWith(' ') && 
+          !segments[index-1].text.endsWith(' ');
         
         return (
           <span 
@@ -75,8 +75,8 @@ const processTextWithMixedLanguages = (text: string): JSX.Element => {
             dir={segment.type === 'arabic' ? 'rtl' : 'ltr'}
             style={{ 
               display: 'inline-block',
-              marginRight: needsSpaceAfter ? '0.35em' : 0,
-              marginLeft: needsSpaceBefore ? '0.35em' : 0
+              marginLeft: needsSpace && segment.type === 'english' ? '0.35em' : 0,
+              marginRight: needsSpace && segment.type === 'arabic' ? '0.35em' : 0
             }}
           >
             {segment.text}
@@ -155,8 +155,8 @@ const MessageCard = ({
     color: debugFont ? 'inherit' : selectedColor,
     textAlign: textAlignment,
     letterSpacing: `${letterSpacing}px`,
-    // For Arabic or mixed content, always set the base direction to RTL
-    direction: hasArabic ? 'rtl' : 'ltr',
+    // For Arabic content, set the base direction
+    direction: hasArabic && !containsArabic(editedMessage.replace(/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/g, '')) ? 'rtl' : 'ltr',
   };
 
   const handleSave = () => {
@@ -211,7 +211,7 @@ const MessageCard = ({
     <div className="print-card">
       <Card 
         className={cn(
-          "flex flex-col p-6 bg-white transition-all duration-200 ease-in-out print:shadow-none print:border-none",
+          "flex flex-col p-6 bg-white transition-all duration-200 ease-in-out print:shadow-none print:border-none card-shadow",
           isHovered && "shadow-lg scale-[1.01]"
         )}
         style={cardStyle}

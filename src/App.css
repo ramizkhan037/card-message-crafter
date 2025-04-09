@@ -8,6 +8,8 @@
   page-break-inside: avoid;
   break-inside: avoid;
   margin: 0.75rem;
+  display: flex;
+  align-items: stretch;
 }
 
 @media print {

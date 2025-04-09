@@ -21,7 +21,9 @@ import {
   Settings,
   FileText,
   Languages,
-  Type
+  Type,
+  LineHeight,
+  LetterSpacing
 } from "lucide-react";
 
 interface CardSettingsProps {
@@ -39,6 +41,10 @@ interface CardSettingsProps {
   setShowMetadata: (show: boolean) => void;
   fontSize: number;
   setFontSize: (size: number) => void;
+  lineHeight: number;
+  setLineHeight: (height: number) => void;
+  letterSpacing: number;
+  setLetterSpacing: (spacing: number) => void;
   onPrint: () => void;
 }
 
@@ -57,6 +63,10 @@ const CardSettings = ({
   setShowMetadata,
   fontSize,
   setFontSize,
+  lineHeight,
+  setLineHeight,
+  letterSpacing,
+  setLetterSpacing,
   onPrint
 }: CardSettingsProps) => {
   const presetSizes = [
@@ -65,6 +75,26 @@ const CardSettings = ({
     { name: "Small Square", width: 100, height: 100 },
     { name: "Thank You", width: 90, height: 120 },
   ];
+
+  // Handler for numeric input changes with validation
+  const handleNumericChange = (
+    value: string, 
+    setter: (val: number) => void, 
+    min: number, 
+    max: number,
+    defaultVal: number
+  ) => {
+    const parsed = parseFloat(value);
+    if (isNaN(parsed)) {
+      setter(defaultVal);
+    } else if (parsed < min) {
+      setter(min);
+    } else if (parsed > max) {
+      setter(max);
+    } else {
+      setter(parsed);
+    }
+  };
 
   return (
     <Card className="w-full">
@@ -157,24 +187,69 @@ const CardSettings = ({
           </TabsContent>
           
           <TabsContent value="style" className="space-y-6">
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2">
-                <Type className="h-4 w-4" />
-                Font Size Adjustment
-              </Label>
-              <div className="flex gap-2 items-center">
-                <Slider
-                  value={[fontSize]}
-                  min={70}
-                  max={150}
-                  step={5}
-                  onValueChange={(value) => setFontSize(value[0])}
-                />
-                <span className="text-sm w-14 text-center">{fontSize}%</span>
+            {/* Typography controls like Adobe Illustrator */}
+            <div className="bg-secondary/30 p-4 rounded-md">
+              <h3 className="text-sm font-medium mb-3 flex items-center">
+                <Type className="h-4 w-4 mr-1.5" />
+                Typography Controls
+              </h3>
+              
+              <div className="space-y-4">
+                {/* Font Size */}
+                <div className="grid grid-cols-5 gap-2 items-center">
+                  <Label className="col-span-2">Font Size (%)</Label>
+                  <div className="col-span-2">
+                    <Input
+                      type="number"
+                      value={fontSize}
+                      min={70}
+                      max={150}
+                      step={1}
+                      onChange={(e) => handleNumericChange(e.target.value, setFontSize, 70, 150, 100)}
+                      className="w-full text-right"
+                    />
+                  </div>
+                  <div className="text-sm">%</div>
+                </div>
+                
+                {/* Line Height */}
+                <div className="grid grid-cols-5 gap-2 items-center">
+                  <Label className="col-span-2 flex items-center gap-1">
+                    <LineHeight className="h-3.5 w-3.5" /> Line Height
+                  </Label>
+                  <div className="col-span-2">
+                    <Input
+                      type="number"
+                      value={lineHeight}
+                      min={0.8}
+                      max={3}
+                      step={0.1}
+                      onChange={(e) => handleNumericChange(e.target.value, setLineHeight, 0.8, 3, 1.5)}
+                      className="w-full text-right"
+                    />
+                  </div>
+                  <div className="text-sm">×</div>
+                </div>
+                
+                {/* Letter Spacing */}
+                <div className="grid grid-cols-5 gap-2 items-center">
+                  <Label className="col-span-2 flex items-center gap-1">
+                    <LetterSpacing className="h-3.5 w-3.5" /> Letter Spacing
+                  </Label>
+                  <div className="col-span-2">
+                    <Input
+                      type="number"
+                      value={letterSpacing}
+                      min={-2}
+                      max={10}
+                      step={0.5}
+                      onChange={(e) => handleNumericChange(e.target.value, setLetterSpacing, -2, 10, 0)}
+                      className="w-full text-right"
+                    />
+                  </div>
+                  <div className="text-sm">px</div>
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Adjust relative font size (100% is default)
-              </p>
             </div>
             
             <div className="space-y-2">

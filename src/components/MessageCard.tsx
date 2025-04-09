@@ -16,6 +16,8 @@ interface MessageCardProps {
   textAlignment: 'left' | 'center' | 'right';
   showMetadata: boolean;
   fontSize: number;
+  lineHeight: number; // Added line height property
+  letterSpacing: number; // Added letter spacing property
   onMessageUpdate?: (id: string, updatedMessage: string) => void;
 }
 
@@ -56,18 +58,36 @@ const processTextWithMixedLanguages = (text: string): JSX.Element => {
     segments.push({ type: currentType, text: currentSegment });
   }
   
-  // Return the segments wrapped in appropriate spans
+  // Add a space character at language boundaries for better readability
   return (
     <>
-      {segments.map((segment, index) => (
-        <span 
-          key={index} 
-          className={segment.type === 'arabic' ? 'arabic-text' : 'english-text'}
-          dir={segment.type === 'arabic' ? 'rtl' : 'ltr'}
-        >
-          {segment.text}
-        </span>
-      ))}
+      {segments.map((segment, index) => {
+        // Add spacing between different language segments
+        const needsSpaceBefore = index > 0 && 
+          segments[index-1].type !== segment.type && 
+          !segment.text.startsWith(' ') && 
+          !segments[index-1].text.endsWith(' ');
+          
+        const needsSpaceAfter = index < segments.length - 1 && 
+          segments[index+1].type !== segment.type && 
+          !segment.text.endsWith(' ') && 
+          !segments[index+1].text.startsWith(' ');
+        
+        return (
+          <span 
+            key={index} 
+            className={segment.type === 'arabic' ? 'arabic-text' : 'english-text'}
+            dir={segment.type === 'arabic' ? 'rtl' : 'ltr'}
+            style={{ 
+              display: 'inline-block',
+              marginRight: needsSpaceAfter ? '0.25em' : 0,
+              marginLeft: needsSpaceBefore ? '0.25em' : 0
+            }}
+          >
+            {segment.text}
+          </span>
+        );
+      })}
     </>
   );
 };
@@ -99,6 +119,8 @@ const MessageCard = ({
   textAlignment,
   showMetadata,
   fontSize,
+  lineHeight = 1.5, // Default line height
+  letterSpacing = 0, // Default letter spacing 
   onMessageUpdate
 }: MessageCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -131,14 +153,15 @@ const MessageCard = ({
     width: `${cardWidth}mm`,
     height: `${cardHeight}mm`,
     fontSize: calculateFontSize(message.message, cardWidth, cardHeight, fontSize),
-    lineHeight: '1.5',
+    lineHeight: lineHeight.toString(),
   };
   
   const textStyle = {
     color: debugFont ? 'inherit' : selectedColor,
     textAlign: textAlignment,
-    // Only set direction for non-mixed content
-    direction: hasArabic && !containsArabic(editedMessage.replace(/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/g, '')) ? 'rtl' : undefined,
+    letterSpacing: `${letterSpacing}px`,
+    // For Arabic or mixed content, always set the base direction to RTL
+    direction: hasArabic ? 'rtl' : 'ltr',
   };
 
   const handleSave = () => {
@@ -180,9 +203,12 @@ const MessageCard = ({
     if (hasArabic && hasEnglish) {
       // Mixed language content
       return processTextWithMixedLanguages(editedMessage);
+    } else if (hasArabic) {
+      // Arabic-only content
+      return <span className="arabic-text" dir="rtl">{editedMessage}</span>;
     } else {
-      // Single language content
-      return editedMessage;
+      // English-only content
+      return <span className="english-text" dir="ltr">{editedMessage}</span>;
     }
   };
 
@@ -321,6 +347,12 @@ const MessageCard = ({
               
               <span>Card size:</span>
               <span>{cardWidth}×{cardHeight}mm</span>
+              
+              <span>Line height:</span>
+              <span>{lineHeight}</span>
+              
+              <span>Letter spacing:</span>
+              <span>{letterSpacing}px</span>
             </div>
           </div>
         )}

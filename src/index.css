@@ -150,12 +150,23 @@
   .arabic-text {
     font-family: 'A Arslan Wessam A', Arial, sans-serif !important;
     unicode-bidi: isolate;
+    text-align: right;
   }
   
   /* English text styling with improved mixed-language support */
   .english-text {
     font-family: 'Rockwell-Bold', Georgia, serif !important;
     unicode-bidi: isolate;
+  }
+  
+  /* Improved mixed language container */
+  .mixed-language-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.25em;
   }
   
   /* Debugging font classes with clear visual indicators */

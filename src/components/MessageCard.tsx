@@ -19,9 +19,57 @@ interface MessageCardProps {
   onMessageUpdate?: (id: string, updatedMessage: string) => void;
 }
 
+// Check if text contains Arabic characters
 const containsArabic = (text: string): boolean => {
   const arabicPattern = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
   return arabicPattern.test(text);
+};
+
+// Process mixed text to wrap segments in appropriate language spans
+const processTextWithMixedLanguages = (text: string): JSX.Element => {
+  // Split text into Arabic and non-Arabic segments
+  const segments = [];
+  let currentSegment = '';
+  let currentType = null;
+  
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const isArabicChar = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/.test(char);
+    
+    if (currentType === null) {
+      // First character
+      currentType = isArabicChar ? 'arabic' : 'english';
+      currentSegment += char;
+    } else if ((currentType === 'arabic' && isArabicChar) || (currentType === 'english' && !isArabicChar)) {
+      // Same language, add to current segment
+      currentSegment += char;
+    } else {
+      // Language change, push current segment and start new one
+      segments.push({ type: currentType, text: currentSegment });
+      currentSegment = char;
+      currentType = isArabicChar ? 'arabic' : 'english';
+    }
+  }
+  
+  // Push the last segment
+  if (currentSegment) {
+    segments.push({ type: currentType, text: currentSegment });
+  }
+  
+  // Return the segments wrapped in appropriate spans
+  return (
+    <>
+      {segments.map((segment, index) => (
+        <span 
+          key={index} 
+          className={segment.type === 'arabic' ? 'arabic-text' : 'english-text'}
+          dir={segment.type === 'arabic' ? 'rtl' : 'ltr'}
+        >
+          {segment.text}
+        </span>
+      ))}
+    </>
+  );
 };
 
 // Check if fonts are loaded
@@ -68,7 +116,12 @@ const MessageCard = ({
     } else if (debugFont === 'arslan') {
       return "font-debug-arslan";
     } else if (selectedFont === 'auto') {
-      return hasArabic ? "arabic-text" : "english-text";
+      // For mixed text, we'll use special rendering instead of a single class
+      if (hasArabic) {
+        return ""; // Empty class as we'll apply classes per text segment
+      } else {
+        return "english-text";
+      }
     } else {
       return selectedFont === 'serif' ? "font-serif" : "font-sans";
     }
@@ -84,7 +137,8 @@ const MessageCard = ({
   const textStyle = {
     color: debugFont ? 'inherit' : selectedColor,
     textAlign: textAlignment,
-    direction: hasArabic ? 'rtl' : 'ltr',
+    // Only set direction for non-mixed content
+    direction: hasArabic && !containsArabic(editedMessage.replace(/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/g, '')) ? 'rtl' : undefined,
   };
 
   const handleSave = () => {
@@ -113,6 +167,25 @@ const MessageCard = ({
     setShowDebugInfo(!showDebugInfo);
   };
 
+  // Render the message content based on whether it has mixed languages
+  const renderMessageContent = () => {
+    // If using debug font or not auto mode, just render as text
+    if (debugFont || selectedFont !== 'auto') {
+      return editedMessage;
+    }
+    
+    // Check if text contains both Arabic and non-Arabic characters
+    const hasEnglish = editedMessage.replace(/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/g, '').trim().length > 0;
+    
+    if (hasArabic && hasEnglish) {
+      // Mixed language content
+      return processTextWithMixedLanguages(editedMessage);
+    } else {
+      // Single language content
+      return editedMessage;
+    }
+  };
+
   return (
     <div className="relative m-2 print-card">
       <Card 
@@ -134,7 +207,7 @@ const MessageCard = ({
                 )}
                 style={textStyle as React.CSSProperties}
               >
-                {editedMessage}
+                {renderMessageContent()}
               </p>
             </div>
             
@@ -222,7 +295,13 @@ const MessageCard = ({
           <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-white text-xs p-2 no-print">
             <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
               <span>Font type:</span>
-              <span>{hasArabic ? 'Arabic detected' : 'English'}</span>
+              <span>
+                {hasArabic 
+                  ? containsArabic(editedMessage.replace(/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/g, '')) 
+                    ? 'Arabic only' 
+                    : 'Mixed languages'
+                  : 'English only'}
+              </span>
               
               <span>Selected font:</span>
               <span>{selectedFont}</span>
@@ -238,7 +317,7 @@ const MessageCard = ({
               </span>
               
               <span>Font class:</span>
-              <span>{getFontClass()}</span>
+              <span>{getFontClass() || 'Mixed fonts'}</span>
               
               <span>Card size:</span>
               <span>{cardWidth}×{cardHeight}mm</span>

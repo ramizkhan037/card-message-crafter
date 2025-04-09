@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Raleway:wght@300;400;500;600&display=swap');
 
 /* Custom font imports with improved error reporting and logging */
@@ -145,14 +146,16 @@
     break-inside: avoid;
   }
   
-  /* Arabic text styling with debugging */
+  /* Arabic text styling with improved mixed-language support */
   .arabic-text {
     font-family: 'A Arslan Wessam A', Arial, sans-serif !important;
+    unicode-bidi: isolate;
   }
   
-  /* English text styling with debugging */
+  /* English text styling with improved mixed-language support */
   .english-text {
     font-family: 'Rockwell-Bold', Georgia, serif !important;
+    unicode-bidi: isolate;
   }
   
   /* Debugging font classes with clear visual indicators */

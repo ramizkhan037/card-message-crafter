@@ -1,3 +1,4 @@
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
@@ -21,7 +22,7 @@ import {
   FileText,
   Languages,
   Type
-} from 'lucide-react";
+} from "lucide-react";
 import FontUploader from "./FontUploader";
 
 interface CardSettingsProps {

@@ -36,4 +36,44 @@ export const parseCsv = (csvString: string): MessageRecord[] => {
   });
 };
 
+// Add the missing parseCSV function that works with File objects
+export const parseCSV = (file: File): Promise<MessageRecord[]> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      try {
+        const csvString = e.target?.result as string;
+        const records = parseCsv(csvString);
+        resolve(records);
+      } catch (error) {
+        reject(error);
+      }
+    };
+    
+    reader.onerror = () => {
+      reject(new Error('Error reading file'));
+    };
+    
+    reader.readAsText(file);
+  });
+};
+
+// Add the missing downloadSampleCSV function
+export const downloadSampleCSV = () => {
+  const csvContent = `message,sender,recipient,orderNumber
+"Happy Birthday! Wishing you a wonderful day filled with joy and happiness.",John Doe,Jane Smith,ORD12345
+"Congratulations on your graduation! We are so proud of your accomplishments.",Mom & Dad,Alex Johnson,ORD12346
+"Thank you for being such an amazing friend. Your support means the world to me.",Sarah,Michael,ORD12347`;
+  
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.href = url;
+  link.setAttribute('download', 'sample-messages.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 export default parseCsv;

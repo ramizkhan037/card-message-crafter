@@ -1,196 +1,49 @@
-
-/* Remove unnecessary styles */
-.card-shadow {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.print-card {
-  page-break-inside: avoid;
-  break-inside: avoid;
-  margin: 0.75rem;
+.message-cards-list {
   display: flex;
-  align-items: stretch;
+  flex-direction: column;
 }
 
-/* Folded card styling */
-.folded-cards-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
+.message-card {
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  page-break-after: always; /* Force a page break after each card */
+  box-sizing: border-box; /* Include padding and border in width/height */
+  display: flex; /* Add flexbox to the card */
+  flex-direction: column; /* Arrange content vertically */
+  justify-content: center; /* Center vertically */
+  align-items: center; /* center horizontally */
+  padding: 20px; /* Add padding to the card */
 }
 
-/* Group folded card pairs */
-.folded-pair-0 {
-  order: 0;
+.message-content {
+  font-size: 1.2rem; /* Increase font size */
+  text-align: center; /* center the text */
+  padding: 20px; /* add padding to message content */
 }
 
-.folded-pair-1 {
-  order: 1;
+.arabic-text {
+  text-align: right; /* right align arabic text */
 }
 
-.folded-pair-2 {
-  order: 2;
+.message-content p:first-child {
+  font-size: 1.5rem; /* change the size of the Hiiii */
 }
 
-.folded-card {
-  position: relative;
-}
-
-.folded-card.folded-card-top {
-  margin-bottom: 0;
-  border-bottom: 1px dotted #ccc;
-}
-
-.folded-card.folded-card-bottom {
-  margin-top: 0;
-  page-break-before: avoid;
-  break-before: avoid;
-}
-
-.fold-line {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-  opacity: 0.5;
-}
-
-/* Word-processor-like styling */
-.message-controls {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  display: flex;
-  gap: 4px;
-  z-index: 100;
-}
-
-@media screen {
-  .folded-card.folded-card-top::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    right: 0;
-    border-bottom: 2px dashed rgba(0, 0, 0, 0.2);
-    z-index: 10;
-  }
+.emoji {
+  font-size: 1.5rem; /* Increase emoji size */
+  margin: 0 5px; /* Add horizontal space around emojis */
 }
 
 @media print {
-  body {
-    background: none !important;
+  body * {
+    visibility: hidden;
   }
-  
-  .no-print {
-    display: none !important;
+  .message-cards-list, .message-cards-list * {
+    visibility: visible;
   }
-  
-  .print-card {
-    margin: 0;
-    padding: 0;
-    box-shadow: none;
-    page-break-inside: avoid;
-    break-inside: avoid;
+  .message-cards-list {
+    position: absolute;
+    left: 0;
+    top: 0;
   }
-  
-  .container {
-    width: 100%;
-    max-width: 100%;
-    padding: 0;
-  }
-  
-  .folded-cards-grid {
-    display: block;
-  }
-  
-  /* Ensure proper page breaks for folded cards */
-  .folded-card.folded-card-top,
-  .folded-card.folded-card-bottom {
-    display: block;
-    page-break-inside: avoid;
-    break-inside: avoid;
-  }
-  
-  /* Hide the fold line in print */
-  .fold-line {
-    display: none;
-  }
-  
-  /* Prevent overlapping during print */
-  .folded-card {
-    margin-bottom: 1rem;
-    overflow: visible;
-    clear: both;
-  }
-  
-  /* Hide the styling toolbar when printing */
-  .styling-toolbar {
-    display: none !important;
-  }
-  
-  /* Ensure spaces are preserved in print */
-  .print-card span {
-    white-space: pre-wrap;
-  }
-  
-  /* Special emoji rendering for print */
-  .emoji-text {
-    color-adjust: exact;
-    print-color-adjust: exact;
-  }
-}
-
-/* Added styles for improved spacing in mixed language text */
-.arabic-text {
-  font-family: 'A Arslan Wessam A', Arial, sans-serif;
-  text-align: right;
-}
-
-.english-text {
-  font-family: 'Rockwell Bold', 'Times New Roman', serif;
-}
-
-/* Better spacing for inline-block words */
-span.english-text + span.english-text,
-span.arabic-text + span.arabic-text {
-  margin-left: 0.15em;
-}
-
-/* Font size adjustment buttons */
-.font-size-controls {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-}
-
-/* Fix emoji rendering in message cards */
-.emoji {
-  font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
-  display: inline-block;
-  margin: 0 2px;
-  vertical-align: middle;
-}
-
-/* Enhanced emoji styling */
-.emoji-text {
-  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif !important;
-  font-style: normal;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-
-/* Animation for selected words */
-@keyframes pulse-outline {
-  0% { outline-color: rgba(var(--primary), 0.3); }
-  50% { outline-color: rgba(var(--primary), 0.7); }
-  100% { outline-color: rgba(var(--primary), 0.3); }
-}
-
-/* Styling for selected word */
-.word-selected {
-  animation: pulse-outline 2s infinite;
-  outline: 2px solid;
-  outline-offset: 2px;
-  border-radius: 4px;
 }

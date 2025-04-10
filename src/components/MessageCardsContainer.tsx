@@ -1,49 +1,40 @@
-
 import { useState } from 'react';
 import MessageCard from './MessageCard';
 import FileUploader from './FileUploader';
 import { MessageRecord } from '@/utils/csvParser';
+import { Button } from '@/components/ui/button';
 
 const MessageCardsContainer = () => {
   const [messages, setMessages] = useState<MessageRecord[]>([]);
-  
-  // Handle file upload
+  const cardWidth = 95;
+  const cardHeight = 189.999;
+
   const handleMessagesUpload = (uploadedMessages: MessageRecord[]) => {
     setMessages(uploadedMessages);
   };
   
+  const handlePrint = () => {
+    window.print();
+  };
+  
   return (
-    <div className="grid grid-cols-1 gap-8">
+    <div>
       <FileUploader onUpload={handleMessagesUpload} />
-      
+      {messages && messages.length > 0 && (
+        <Button onClick={handlePrint}>Print Cards</Button>
+      )}
       <div>
         {messages && messages.length > 0 ? (
-          <>
-          <div className="grid grid-cols-1 gap-6">
+          <div className="message-cards-list">
             {messages.map((message) => (
               <MessageCard
                 key={message.id}
                 message={message}
+                cardWidth={cardWidth}
+                cardHeight={cardHeight}
               />
             ))}
           </div>
-          {/* <div className={`grid grid-cols-1 ${foldedCard ? 'folded-cards-grid' : 'md:grid-cols-2 xl:grid-cols-3'} gap-6`}>
-              {messages.map((message, index) => { */}
-                {/*  console.log(`MessageCardsContainer: messages.map is being called. Number of messages: ${messages.length}`); */}
-                {/* 
-                return (
-                  <MessageCard
-                    key={message.id}
-                    message={message}
-                    cardWidth={cardWidth}
-                    cardHeight={foldedCard ? cardHeight / 2 : cardHeight}
-                    selectedFont={selectedFont}
-                    
-                  />
-                );
-              })}
-            </div> */}
-          </>
         ) : (
           <div>
             <h2>No Message Cards Yet</h2>
@@ -54,4 +45,5 @@ const MessageCardsContainer = () => {
     </div>
   );
 };
+
 export default MessageCardsContainer;

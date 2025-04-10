@@ -93,6 +93,5 @@ export const downloadSampleCSV = () => {
   document.body.removeChild(link);
 };
 
-// Make sure we're exporting both the functions and the default object correctly
-export { parseCsv, parseCSV, downloadSampleCSV };
+// Export as a default object (removing the duplicate individual exports)
 export default { parseCsv, parseCSV, downloadSampleCSV };

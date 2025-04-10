@@ -141,3 +141,11 @@
   gap: 4px;
   align-items: center;
 }
+
+/* Fix emoji rendering in message cards */
+.emoji {
+  font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
+  display: inline-block;
+  margin: 0 2px;
+  vertical-align: middle;
+}

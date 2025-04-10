@@ -16,6 +16,7 @@ const FileUploader = ({ onUpload, isLoading = false }: FileUploaderProps) => {
   
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
+      console.log('File selected:', e.target.files[0].name);
       await validateAndUploadFile(e.target.files[0]);
     }
   };
@@ -23,6 +24,8 @@ const FileUploader = ({ onUpload, isLoading = false }: FileUploaderProps) => {
   const validateAndUploadFile = async (file: File) => {
     // Accept both CSV and Excel CSV MIME types
     const validTypes = ['text/csv', 'application/vnd.ms-excel', 'application/csv', 'text/comma-separated-values', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+    
+    console.log('File type:', file.type);
     
     if (!validTypes.includes(file.type) && !file.name.endsWith('.csv') && !file.name.endsWith('.xls') && !file.name.endsWith('.xlsx')) {
       toast({
@@ -42,15 +45,17 @@ const FileUploader = ({ onUpload, isLoading = false }: FileUploaderProps) => {
     
     try {
       const messages = await parseCSV(file);
-      console.log('Parsed Messages:', messages); // Debug log
+      console.log('Parsed Messages from FileUploader:', messages); // Debug log
       
       if (messages && messages.length > 0) {
+        console.log('Calling onUpload with messages:', messages);
         onUpload(messages);
         toast({
           title: "Success",
           description: `Loaded ${messages.length} messages successfully`,
         });
       } else {
+        console.error('No messages found in file');
         toast({
           title: "Warning",
           description: "No messages found in the uploaded file",

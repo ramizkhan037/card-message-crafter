@@ -55,6 +55,7 @@ const MessageCardsContainer = ({ foldedCard = true, setFoldedCard }: MessageCard
       }
     }));
     
+    console.log('Enhanced messages to set:', enhancedMessages);
     setMessages(enhancedMessages);
     
     // Save to localStorage
@@ -114,6 +115,8 @@ const MessageCardsContainer = ({ foldedCard = true, setFoldedCard }: MessageCard
     window.print();
   };
   
+  console.log('Current messages in state:', messages); // Debug current message state
+  
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[350px_1fr] gap-8">
       <div className="space-y-6 no-print">
@@ -142,16 +145,14 @@ const MessageCardsContainer = ({ foldedCard = true, setFoldedCard }: MessageCard
             setFoldedCard={setFoldedCard}
           />
           
-          {messages.length === 0 && (
-            <div className="mt-6">
-              <FileUploader onUpload={handleMessagesUpload} />
-            </div>
-          )}
+          <div className="mt-6">
+            <FileUploader onUpload={handleMessagesUpload} isLoading={isLoading} />
+          </div>
         </div>
       </div>
       
       <div>
-        {messages.length > 0 ? (
+        {messages && messages.length > 0 ? (
           <>
             <div className="bg-white rounded-lg p-6 shadow-sm mb-6 no-print">
               <div className="flex justify-between items-center">
@@ -161,30 +162,32 @@ const MessageCardsContainer = ({ foldedCard = true, setFoldedCard }: MessageCard
                     Displaying {messages.length} cards for printing
                   </p>
                 </div>
-                <FileUploader onUpload={handleMessagesUpload} />
               </div>
             </div>
             
             <div className={`grid grid-cols-1 ${foldedCard ? 'folded-cards-grid' : 'md:grid-cols-2 xl:grid-cols-3'} gap-6`}>
-              {messages.map((message, index) => (
-                <MessageCard
-                  key={message.id}
-                  message={message}
-                  cardWidth={cardWidth}
-                  cardHeight={foldedCard ? cardHeight / 2 : cardHeight}
-                  selectedFont={selectedFont}
-                  selectedColor={selectedColor}
-                  textAlignment={textAlignment}
-                  showMetadata={showMetadata}
-                  fontSize={fontSize}
-                  lineHeight={lineHeight}
-                  letterSpacing={letterSpacing}
-                  onMessageUpdate={handleMessageUpdate}
-                  isFolded={foldedCard}
-                  foldPosition={foldedCard ? (index % 2 === 0 ? 'top' : 'bottom') : undefined}
-                  pairIndex={foldedCard ? Math.floor(index / 2) : undefined}
-                />
-              ))}
+              {messages.map((message, index) => {
+                console.log(`Rendering message ${index}:`, message);
+                return (
+                  <MessageCard
+                    key={message.id}
+                    message={message}
+                    cardWidth={cardWidth}
+                    cardHeight={foldedCard ? cardHeight / 2 : cardHeight}
+                    selectedFont={selectedFont}
+                    selectedColor={selectedColor}
+                    textAlignment={textAlignment}
+                    showMetadata={showMetadata}
+                    fontSize={fontSize}
+                    lineHeight={lineHeight}
+                    letterSpacing={letterSpacing}
+                    onMessageUpdate={handleMessageUpdate}
+                    isFolded={foldedCard}
+                    foldPosition={foldedCard ? (index % 2 === 0 ? 'top' : 'bottom') : undefined}
+                    pairIndex={foldedCard ? Math.floor(index / 2) : undefined}
+                  />
+                );
+              })}
             </div>
           </>
         ) : (

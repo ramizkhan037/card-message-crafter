@@ -15,6 +15,7 @@ export interface MessageRecord {
   };
 }
 
+// Function that parses CSV string
 export const parseCsv = (csvString: string): MessageRecord[] => {
   const parseResult = Papa.parse(csvString, {
     header: true,
@@ -28,8 +29,10 @@ export const parseCsv = (csvString: string): MessageRecord[] => {
   // Add unique ID to each record
   const records = parseResult.data as Record<string, string>[];
   
+  console.log('Raw parsed records:', records); // Debug logging
+  
   return records.map((record, index) => {
-    return {
+    const messageRecord = {
       id: `msg-${index}-${Date.now()}`,
       message: record.message || '',
       sender: record.sender,
@@ -39,6 +42,8 @@ export const parseCsv = (csvString: string): MessageRecord[] => {
         wordStyles: {}
       }
     };
+    console.log('Created message record:', messageRecord); // Debug logging
+    return messageRecord;
   });
 };
 
@@ -50,8 +55,12 @@ export const parseCSV = (file: File): Promise<MessageRecord[]> => {
     reader.onload = (e) => {
       try {
         const csvString = e.target?.result as string;
+        console.log('CSV content:', csvString.substring(0, 100) + '...'); // Show beginning of CSV
+        
         const records = parseCsv(csvString);
-        console.log('Parsed CSV Records:', records); // Add debugging
+        console.log('Parsed CSV Records count:', records.length); // Add debugging
+        console.log('First record (if exists):', records[0]);
+        
         resolve(records);
       } catch (error) {
         console.error('Error parsing CSV:', error);
@@ -84,6 +93,7 @@ export const downloadSampleCSV = () => {
   document.body.removeChild(link);
 };
 
+// Export both parseCSV and parseCsv for backward compatibility
 export default {
   parseCsv,
   parseCSV,

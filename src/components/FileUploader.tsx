@@ -12,10 +12,11 @@ interface FileUploaderProps {
 
 const FileUploader = ({ onUpload, isLoading = false }: FileUploaderProps) => {
   const { toast } = useToast();
+  const [uploading, setUploading] = useState(false);
   
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      validateAndUploadFile(e.target.files[0]);
+      await validateAndUploadFile(e.target.files[0]);
     }
   };
   
@@ -32,6 +33,8 @@ const FileUploader = ({ onUpload, isLoading = false }: FileUploaderProps) => {
       return;
     }
     
+    setUploading(true);
+    
     toast({
       title: "Uploading",
       description: `Processing ${file.name}...`,
@@ -39,7 +42,21 @@ const FileUploader = ({ onUpload, isLoading = false }: FileUploaderProps) => {
     
     try {
       const messages = await parseCSV(file);
-      onUpload(messages);
+      console.log('Parsed Messages:', messages); // Debug log
+      
+      if (messages && messages.length > 0) {
+        onUpload(messages);
+        toast({
+          title: "Success",
+          description: `Loaded ${messages.length} messages successfully`,
+        });
+      } else {
+        toast({
+          title: "Warning",
+          description: "No messages found in the uploaded file",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error('Error parsing CSV:', error);
       toast({
@@ -47,6 +64,8 @@ const FileUploader = ({ onUpload, isLoading = false }: FileUploaderProps) => {
         description: "Failed to parse the file. Please check the format and try again.",
         variant: "destructive",
       });
+    } finally {
+      setUploading(false);
     }
   };
   
@@ -64,17 +83,17 @@ const FileUploader = ({ onUpload, isLoading = false }: FileUploaderProps) => {
         variant="outline" 
         className="flex items-center gap-2" 
         onClick={() => document.getElementById('file-upload')?.click()}
-        disabled={isLoading}
+        disabled={isLoading || uploading}
       >
         <Upload size={16} />
-        {isLoading ? 'Processing...' : 'Upload CSV'}
+        {uploading ? 'Processing...' : isLoading ? 'Processing...' : 'Upload CSV'}
         <input 
           id="file-upload" 
           type="file" 
           className="hidden" 
           accept=".csv,.xls,.xlsx"
           onChange={handleFileChange}
-          disabled={isLoading}
+          disabled={isLoading || uploading}
         />
       </Button>
       

@@ -42,7 +42,7 @@ export const parseCsv = (csvString: string): MessageRecord[] => {
   });
 };
 
-// Add the missing parseCSV function that works with File objects
+// Function that works with File objects
 export const parseCSV = (file: File): Promise<MessageRecord[]> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -51,8 +51,10 @@ export const parseCSV = (file: File): Promise<MessageRecord[]> => {
       try {
         const csvString = e.target?.result as string;
         const records = parseCsv(csvString);
+        console.log('Parsed CSV Records:', records); // Add debugging
         resolve(records);
       } catch (error) {
+        console.error('Error parsing CSV:', error);
         reject(error);
       }
     };
@@ -65,7 +67,7 @@ export const parseCSV = (file: File): Promise<MessageRecord[]> => {
   });
 };
 
-// Add the missing downloadSampleCSV function
+// Sample CSV download function
 export const downloadSampleCSV = () => {
   const csvContent = `message,sender,recipient,orderNumber
 "Happy Birthday! Wishing you a wonderful day filled with joy and happiness.",John Doe,Jane Smith,ORD12345
@@ -82,4 +84,8 @@ export const downloadSampleCSV = () => {
   document.body.removeChild(link);
 };
 
-export default parseCsv;
+export default {
+  parseCsv,
+  parseCSV,
+  downloadSampleCSV
+};

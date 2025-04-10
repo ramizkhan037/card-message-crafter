@@ -4,7 +4,7 @@ import MessageCard from './MessageCard';
 import FileUploader from './FileUploader';
 import CardSettings from './CardSettings';
 import { MessageRecord, parseCSV, downloadSampleCSV } from '@/utils/csvParser';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 // Enhanced MessageRecord interface with style data
 interface EnhancedMessageRecord extends MessageRecord {
@@ -32,9 +32,21 @@ const MessageCardsContainer = ({ foldedCard = true, setFoldedCard }: MessageCard
   
   // State for messages with enhanced type
   const [messages, setMessages] = useState<EnhancedMessageRecord[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   
   // Handle file upload
   const handleMessagesUpload = (uploadedMessages: MessageRecord[]) => {
+    console.log('Received messages in container:', uploadedMessages);
+    
+    if (!uploadedMessages || uploadedMessages.length === 0) {
+      toast({
+        title: "Error",
+        description: "No messages were found in the uploaded file",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     // Convert to enhanced message records
     const enhancedMessages: EnhancedMessageRecord[] = uploadedMessages.map(msg => ({
       ...msg,
@@ -59,9 +71,16 @@ const MessageCardsContainer = ({ foldedCard = true, setFoldedCard }: MessageCard
     const savedMessages = localStorage.getItem('cardMessages');
     if (savedMessages) {
       try {
-        setMessages(JSON.parse(savedMessages));
+        const parsedMessages = JSON.parse(savedMessages);
+        console.log('Loaded messages from localStorage:', parsedMessages);
+        setMessages(parsedMessages);
       } catch (error) {
         console.error('Error loading saved messages:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load saved messages",
+          variant: "destructive",
+        });
       }
     }
   }, []);
@@ -174,6 +193,12 @@ const MessageCardsContainer = ({ foldedCard = true, setFoldedCard }: MessageCard
             <p className="text-slate-500 mb-6 max-w-md mx-auto">
               Upload a CSV file to get started. The file should contain columns for 'message', 'sender', and 'recipient'.
             </p>
+            <button 
+              onClick={() => downloadSampleCSV()} 
+              className="text-blue-500 underline text-sm mb-4"
+            >
+              Download a sample CSV file
+            </button>
             <img 
               src="/placeholder.svg" 
               alt="Upload illustration" 

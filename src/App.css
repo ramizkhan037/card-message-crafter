@@ -123,6 +123,22 @@
     overflow: visible;
     clear: both;
   }
+  
+  /* Hide the styling toolbar when printing */
+  .styling-toolbar {
+    display: none !important;
+  }
+  
+  /* Ensure spaces are preserved in print */
+  .print-card span {
+    white-space: pre-wrap;
+  }
+  
+  /* Special emoji rendering for print */
+  .emoji-text {
+    color-adjust: exact;
+    print-color-adjust: exact;
+  }
 }
 
 /* Added styles for improved spacing in mixed language text */
@@ -133,6 +149,12 @@
 
 .english-text {
   font-family: 'Rockwell Bold', 'Times New Roman', serif;
+}
+
+/* Better spacing for inline-block words */
+span.english-text + span.english-text,
+span.arabic-text + span.arabic-text {
+  margin-left: 0.15em;
 }
 
 /* Font size adjustment buttons */
@@ -148,4 +170,27 @@
   display: inline-block;
   margin: 0 2px;
   vertical-align: middle;
+}
+
+/* Enhanced emoji styling */
+.emoji-text {
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif !important;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Animation for selected words */
+@keyframes pulse-outline {
+  0% { outline-color: rgba(var(--primary), 0.3); }
+  50% { outline-color: rgba(var(--primary), 0.7); }
+  100% { outline-color: rgba(var(--primary), 0.3); }
+}
+
+/* Styling for selected word */
+.word-selected {
+  animation: pulse-outline 2s infinite;
+  outline: 2px solid;
+  outline-offset: 2px;
+  border-radius: 4px;
 }

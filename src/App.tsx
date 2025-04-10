@@ -33,9 +33,9 @@ function App() {
     window.print();
   };
 
-  const handleMessageUpdate = (id: string, updatedMessage: string) => {
+  const handleMessageUpdate = (id: string, updatedMessage: string, styleData?: any) => {
     const updatedMessages = messages.map(msg => 
-      msg.id === id ? { ...msg, message: updatedMessage } : msg
+      msg.id === id ? { ...msg, message: updatedMessage, styleData } : msg
     );
     setMessages(updatedMessages);
     

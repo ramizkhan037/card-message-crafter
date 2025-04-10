@@ -35,6 +35,9 @@ interface MessageCardProps {
   lineHeight: number;
   letterSpacing: number;
   onMessageUpdate?: (id: string, updatedMessage: string, styleData?: any) => void;
+  isFolded?: boolean;
+  foldPosition?: 'top' | 'bottom';
+  pairIndex?: number;
 }
 
 // Enhanced MessageRecord with style data
@@ -103,7 +106,10 @@ const MessageCard = ({
   fontSize: globalFontSize,
   lineHeight,
   letterSpacing,
-  onMessageUpdate
+  onMessageUpdate,
+  isFolded,
+  foldPosition,
+  pairIndex
 }: MessageCardProps) => {
   // Cast to enhanced message to access style data
   const message = initialMessage as EnhancedMessageRecord;
@@ -256,7 +262,7 @@ const MessageCard = ({
               style={getWordStyle(index, baseSize)}
               className={cn(
                 "transition-all duration-100",
-                isSelected && "bg-primary/10 outline outline-1 outline-primary rounded",
+                isSelected && "word-selected",
                 isEmojiWord && "emoji-text" // Add a class for emojis
               )}
               onClick={isEditing ? () => setSelectedWordIndex(index) : undefined}
@@ -281,7 +287,7 @@ const MessageCard = ({
     const currentSize = wordStyles[wordKey]?.fontSize || 100;
     
     return (
-      <div className="absolute bottom-4 left-4 right-4 bg-background border rounded-md p-2 shadow-md z-10 no-print">
+      <div className="absolute bottom-4 left-4 right-4 bg-background border rounded-md p-2 shadow-md z-10 no-print styling-toolbar">
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm font-medium">
             {isEmoji(word) ? "Emoji Size:" : "Word Size:"}
@@ -343,7 +349,11 @@ const MessageCard = ({
   };
 
   return (
-    <div className="print-card">
+    <div className={cn(
+      "print-card",
+      isFolded && `folded-card folded-card-${foldPosition}`,
+      isFolded && pairIndex !== undefined && `folded-pair-${pairIndex}`
+    )}>
       <Card 
         className={cn(
           "flex flex-col p-6 bg-white transition-all duration-200 ease-in-out print:shadow-none print:border-none card-shadow",

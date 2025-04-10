@@ -1,4 +1,3 @@
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
@@ -44,6 +43,8 @@ interface CardSettingsProps {
   letterSpacing: number;
   setLetterSpacing: (spacing: number) => void;
   onPrint: () => void;
+  foldedCard?: boolean;
+  setFoldedCard?: (folded: boolean) => void;
 }
 
 const CardSettings = ({
@@ -65,13 +66,16 @@ const CardSettings = ({
   setLineHeight,
   letterSpacing,
   setLetterSpacing,
-  onPrint
+  onPrint,
+  foldedCard = false,
+  setFoldedCard = () => {}
 }: CardSettingsProps) => {
   const presetSizes = [
     { name: "A6 Folded", width: 105, height: 148 },
     { name: "A5 Folded", width: 148, height: 210 },
     { name: "Small Square", width: 100, height: 100 },
     { name: "Thank You", width: 90, height: 120 },
+    { name: "Custom Folded", width: 95, height: 190 },
   ];
 
   // Handler for numeric input changes with validation
@@ -115,7 +119,7 @@ const CardSettings = ({
           <TabsContent value="size" className="space-y-4">
             <div>
               <Label>Select a preset size</Label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
                 {presetSizes.map((size) => (
                   <Button
                     key={size.name}
@@ -129,6 +133,11 @@ const CardSettings = ({
                     onClick={() => {
                       setCardWidth(size.width);
                       setCardHeight(size.height);
+                      if (size.name.includes("Folded")) {
+                        setFoldedCard(true);
+                      } else {
+                        setFoldedCard(false);
+                      }
                     }}
                   >
                     {size.name}
@@ -181,11 +190,19 @@ const CardSettings = ({
                   />
                 </div>
               </div>
+              
+              <div className="flex items-center space-x-2 pt-2">
+                <Switch 
+                  id="folded-card"
+                  checked={foldedCard}
+                  onCheckedChange={setFoldedCard}
+                />
+                <Label htmlFor="folded-card">Folded card (print front/back)</Label>
+              </div>
             </div>
           </TabsContent>
           
           <TabsContent value="style" className="space-y-6">
-            {/* Typography controls like Adobe Illustrator */}
             <div className="bg-secondary/30 p-4 rounded-md">
               <h3 className="text-sm font-medium mb-3 flex items-center">
                 <Type className="h-4 w-4 mr-1.5" />
@@ -193,7 +210,6 @@ const CardSettings = ({
               </h3>
               
               <div className="space-y-4">
-                {/* Font Size */}
                 <div className="grid grid-cols-5 gap-2 items-center">
                   <Label className="col-span-2">Font Size (%)</Label>
                   <div className="col-span-2">
@@ -210,7 +226,6 @@ const CardSettings = ({
                   <div className="text-sm">%</div>
                 </div>
                 
-                {/* Line Height */}
                 <div className="grid grid-cols-5 gap-2 items-center">
                   <Label className="col-span-2 flex items-center gap-1">
                     <Type className="h-3.5 w-3.5" /> Line Height
@@ -229,7 +244,6 @@ const CardSettings = ({
                   <div className="text-sm">×</div>
                 </div>
                 
-                {/* Letter Spacing */}
                 <div className="grid grid-cols-5 gap-2 items-center">
                   <Label className="col-span-2 flex items-center gap-1">
                     <Type className="h-3.5 w-3.5" /> Letter Spacing
@@ -359,6 +373,13 @@ const CardSettings = ({
                 <li>Ensure your printer is properly configured.</li>
                 <li>In the print dialog, set margins to "None" or "Minimum".</li>
                 <li>Choose "Actual Size" rather than "Fit to Page".</li>
+                {foldedCard && (
+                  <>
+                    <li className="font-medium">Folded Card Mode is ON:</li>
+                    <li className="pl-3">Cards will print with messages on both sides of the fold.</li>
+                    <li className="pl-3">After printing, fold along the middle line.</li>
+                  </>
+                )}
                 <li>For multiple cards, select "Multiple pages per sheet" for efficiency.</li>
               </ul>
             </div>

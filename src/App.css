@@ -12,6 +12,61 @@
   align-items: stretch;
 }
 
+/* Folded card styling */
+.folded-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+/* Group folded card pairs */
+.folded-pair-0 {
+  order: 0;
+}
+
+.folded-pair-1 {
+  order: 1;
+}
+
+.folded-pair-2 {
+  order: 2;
+}
+
+.folded-card {
+  position: relative;
+}
+
+.folded-card.folded-card-top {
+  margin-bottom: 0;
+  border-bottom: 1px dotted #ccc;
+}
+
+.folded-card.folded-card-bottom {
+  margin-top: 0;
+  page-break-before: avoid;
+  break-before: avoid;
+}
+
+.fold-line {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  opacity: 0.5;
+}
+
+@media screen {
+  .folded-card.folded-card-top::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    border-bottom: 2px dashed rgba(0, 0, 0, 0.2);
+    z-index: 10;
+  }
+}
+
 @media print {
   body {
     background: none !important;
@@ -32,5 +87,22 @@
     width: 100%;
     max-width: 100%;
     padding: 0;
+  }
+  
+  .folded-cards-grid {
+    display: block;
+  }
+  
+  /* Ensure proper page breaks for folded cards */
+  .folded-card.folded-card-top,
+  .folded-card.folded-card-bottom {
+    display: block;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  
+  /* Hide the fold line in print */
+  .fold-line {
+    display: none;
   }
 }

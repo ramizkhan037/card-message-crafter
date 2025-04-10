@@ -11,8 +11,8 @@ const Index = () => {
   const [messages, setMessages] = useState<MessageRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [lastUploadedFile, setLastUploadedFile] = useState<string | null>(null);
-  const [cardWidth, setCardWidth] = useState(105); // Default to A6 width in mm
-  const [cardHeight, setCardHeight] = useState(148); // Default to A6 height in mm
+  const [cardWidth, setCardWidth] = useState(95); // Default to custom width
+  const [cardHeight, setCardHeight] = useState(190); // Default to custom height
   const [selectedFont, setSelectedFont] = useState('auto'); // Default to auto detect
   const [selectedColor, setSelectedColor] = useState('#2D3047');
   const [textAlignment, setTextAlignment] = useState<'left' | 'center' | 'right'>('center');
@@ -20,6 +20,7 @@ const Index = () => {
   const [fontSize, setFontSize] = useState(100); // Default font size 100%
   const [lineHeight, setLineHeight] = useState(1.5); // Default line height
   const [letterSpacing, setLetterSpacing] = useState(0); // Default letter spacing
+  const [foldedCard, setFoldedCard] = useState(true); // Default to folded card
 
   const handleFileUpload = (parsedMessages: MessageRecord[]) => {
     setIsLoading(false);
@@ -92,6 +93,8 @@ const Index = () => {
               letterSpacing={letterSpacing}
               setLetterSpacing={setLetterSpacing}
               onPrint={handlePrint}
+              foldedCard={foldedCard}
+              setFoldedCard={setFoldedCard}
             />
           </div>
           
@@ -109,13 +112,13 @@ const Index = () => {
             </div>
             
             {messages.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-                {messages.map((message) => (
+              <div className={`grid grid-cols-1 ${foldedCard ? 'folded-cards-grid' : 'md:grid-cols-2'} gap-4 items-start`}>
+                {messages.map((message, index) => (
                   <MessageCard 
                     key={message.id} 
                     message={message}
                     cardWidth={cardWidth}
-                    cardHeight={cardHeight}
+                    cardHeight={foldedCard ? cardHeight / 2 : cardHeight}
                     selectedFont={selectedFont}
                     selectedColor={selectedColor}
                     textAlignment={textAlignment}
@@ -124,6 +127,9 @@ const Index = () => {
                     lineHeight={lineHeight}
                     letterSpacing={letterSpacing}
                     onMessageUpdate={handleMessageUpdate}
+                    isFolded={foldedCard}
+                    foldPosition={foldedCard ? (index % 2 === 0 ? 'top' : 'bottom') : undefined}
+                    pairIndex={foldedCard ? Math.floor(index / 2) : undefined}
                   />
                 ))}
               </div>

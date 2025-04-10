@@ -19,6 +19,9 @@ interface MessageCardProps {
   lineHeight: number;
   letterSpacing: number;
   onMessageUpdate?: (id: string, updatedMessage: string) => void;
+  isFolded?: boolean;
+  foldPosition?: 'top' | 'bottom';
+  pairIndex?: number;
 }
 
 // Check if text contains Arabic characters
@@ -116,7 +119,10 @@ const MessageCard = ({
   fontSize,
   lineHeight,
   letterSpacing,
-  onMessageUpdate
+  onMessageUpdate,
+  isFolded = false,
+  foldPosition = 'top',
+  pairIndex
 }: MessageCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -208,16 +214,27 @@ const MessageCard = ({
   };
 
   return (
-    <div className="print-card">
+    <div className={cn(
+      "print-card", 
+      isFolded && `folded-card folded-card-${foldPosition}`,
+      isFolded && pairIndex !== undefined && `folded-pair-${pairIndex}`
+    )}>
       <Card 
         className={cn(
           "flex flex-col p-6 bg-white transition-all duration-200 ease-in-out print:shadow-none print:border-none card-shadow",
-          isHovered && "shadow-lg scale-[1.01]"
+          isHovered && "shadow-lg scale-[1.01]",
+          isFolded && "fold-part"
         )}
         style={cardStyle}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
+        {isFolded && (
+          <div className="absolute left-0 right-0 fold-line no-print">
+            <div className="border-t border-dashed border-gray-300 my-2"></div>
+          </div>
+        )}
+
         {!isEditing ? (
           <>
             <div className="flex-1 flex items-center justify-center">
@@ -348,6 +365,16 @@ const MessageCard = ({
               
               <span>Letter spacing:</span>
               <span>{letterSpacing}px</span>
+              
+              {isFolded && (
+                <>
+                  <span>Folded position:</span>
+                  <span>{foldPosition}</span>
+                  
+                  <span>Pair index:</span>
+                  <span>{pairIndex}</span>
+                </>
+              )}
             </div>
           </div>
         )}

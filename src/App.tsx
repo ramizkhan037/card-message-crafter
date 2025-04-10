@@ -6,11 +6,11 @@ import CardSettings from './components/CardSettings';
 import FileUploader from './components/FileUploader';
 import { MessageRecord } from './utils/csvParser';
 import { Toaster } from './components/ui/toaster';
-import { Separator } from './components/ui/separator';
+import { toast } from './components/ui/use-toast';
 
 function App() {
-  const [cardWidth, setCardWidth] = useState(95); // New default width
-  const [cardHeight, setCardHeight] = useState(190); // New default height
+  const [cardWidth, setCardWidth] = useState(95); // Default width
+  const [cardHeight, setCardHeight] = useState(190); // Default height
   const [selectedFont, setSelectedFont] = useState<string>('auto');
   const [selectedColor, setSelectedColor] = useState<string>('#000000');
   const [textAlignment, setTextAlignment] = useState<'left' | 'center' | 'right'>('center');
@@ -23,6 +23,10 @@ function App() {
 
   const handleMessagesUpload = (uploadedMessages: MessageRecord[]) => {
     setMessages(uploadedMessages);
+    toast({
+      title: "Messages uploaded",
+      description: `${uploadedMessages.length} messages have been loaded successfully.`,
+    });
   };
 
   const handlePrint = () => {
@@ -34,6 +38,11 @@ function App() {
       msg.id === id ? { ...msg, message: updatedMessage } : msg
     );
     setMessages(updatedMessages);
+    
+    toast({
+      title: "Message updated",
+      description: "Your changes have been saved successfully.",
+    });
   };
 
   return (

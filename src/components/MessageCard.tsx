@@ -5,7 +5,7 @@ import { MessageRecord } from '@/utils/csvParser';
 import { cn } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Pencil, Check, X, Bug, FileWarning } from 'lucide-react';
+import { Pencil, Check, X, Bug, FileWarning, Plus, Minus } from 'lucide-react';
 
 interface MessageCardProps {
   message: MessageRecord;
@@ -61,11 +61,11 @@ const processTextWithMixedLanguages = (text: string): JSX.Element => {
     segments.push({ type: currentType, text: currentSegment });
   }
   
+  // Don't add extra spaces between Arabic segments
   return (
     <>
       {segments.map((segment, index) => {
-        // Only add a space between different language segments
-        // Don't add spaces between segments of the same language
+        // Only add a space between Arabic and English segments when needed
         const needsSpace = index > 0 && 
           segments[index-1].type !== segment.type && 
           !segment.text.startsWith(' ') && 
@@ -129,6 +129,7 @@ const MessageCard = ({
   const [editedMessage, setEditedMessage] = useState(message.message);
   const [debugFont, setDebugFont] = useState<string | null>(null);
   const [showDebugInfo, setShowDebugInfo] = useState(false);
+  const [localFontSize, setLocalFontSize] = useState<number>(fontSize);
   
   const hasArabic = containsArabic(message.message);
   const { rockwellLoaded, arslanLoaded } = checkFontLoading();
@@ -150,10 +151,11 @@ const MessageCard = ({
     }
   };
 
+  // Use localFontSize for rendering but fontSize for the initial value
   const cardStyle = {
     width: `${cardWidth}mm`,
     height: `${cardHeight}mm`,
-    fontSize: calculateFontSize(message.message, cardWidth, cardHeight, fontSize),
+    fontSize: calculateFontSize(message.message, cardWidth, cardHeight, localFontSize),
     lineHeight: lineHeight.toString(),
   };
   
@@ -189,6 +191,14 @@ const MessageCard = ({
   
   const toggleDebugInfo = () => {
     setShowDebugInfo(!showDebugInfo);
+  };
+  
+  const increaseFontSize = () => {
+    setLocalFontSize(prev => Math.min(prev + 10, 200));
+  };
+  
+  const decreaseFontSize = () => {
+    setLocalFontSize(prev => Math.max(prev - 10, 50));
   };
 
   // Render the message content based on whether it has mixed languages
@@ -263,6 +273,26 @@ const MessageCard = ({
                 <Button 
                   variant="outline" 
                   size="sm" 
+                  className="p-1 h-8 w-8 rounded-full bg-white/90 shadow-sm hover:bg-white"
+                  onClick={decreaseFontSize}
+                  title="Decrease font size"
+                >
+                  <Minus size={14} />
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="p-1 h-8 w-8 rounded-full bg-white/90 shadow-sm hover:bg-white"
+                  onClick={increaseFontSize}
+                  title="Increase font size"
+                >
+                  <Plus size={14} />
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="sm" 
                   className={cn(
                     "p-1 h-8 w-8 rounded-full bg-white/90 shadow-sm hover:bg-white",
                     debugFont && "bg-muted"
@@ -300,7 +330,7 @@ const MessageCard = ({
                 )}
                 style={{
                   ...textStyle as React.CSSProperties,
-                  fontSize: `calc(${calculateFontSize(message.message, cardWidth, cardHeight, fontSize)} * 0.9)`,
+                  fontSize: `calc(${calculateFontSize(message.message, cardWidth, cardHeight, localFontSize)} * 0.9)`,
                   minHeight: '80px'
                 }}
               />
@@ -360,6 +390,9 @@ const MessageCard = ({
               <span>Card size:</span>
               <span>{cardWidth}×{cardHeight}mm</span>
               
+              <span>Font size:</span>
+              <span>{localFontSize}% ({calculateFontSize(message.message, cardWidth, cardHeight, localFontSize)})</span>
+              
               <span>Line height:</span>
               <span>{lineHeight}</span>
               
@@ -400,7 +433,7 @@ const calculateFontSize = (message: string, width: number, height: number, fontS
   // Apply font size adjustment
   baseFontSize = baseFontSize * (fontSizePercentage / 100);
   
-  baseFontSize = Math.min(Math.max(baseFontSize, 12), 24);
+  baseFontSize = Math.min(Math.max(baseFontSize, 12), 36); // Increased max font size from 24 to 36
   
   return `${baseFontSize}px`;
 };

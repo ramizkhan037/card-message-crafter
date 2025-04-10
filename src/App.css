@@ -55,6 +55,16 @@
   opacity: 0.5;
 }
 
+/* Word-processor-like styling */
+.message-controls {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  z-index: 100;
+}
+
 @media screen {
   .folded-card.folded-card-top::after {
     content: '';
@@ -81,6 +91,7 @@
     padding: 0;
     box-shadow: none;
     page-break-inside: avoid;
+    break-inside: avoid;
   }
   
   .container {
@@ -105,4 +116,28 @@
   .fold-line {
     display: none;
   }
+  
+  /* Prevent overlapping during print */
+  .folded-card {
+    margin-bottom: 1rem;
+    overflow: visible;
+    clear: both;
+  }
+}
+
+/* Added styles for improved spacing in mixed language text */
+.arabic-text {
+  font-family: 'A Arslan Wessam A', Arial, sans-serif;
+  text-align: right;
+}
+
+.english-text {
+  font-family: 'Rockwell Bold', 'Times New Roman', serif;
+}
+
+/* Font size adjustment buttons */
+.font-size-controls {
+  display: flex;
+  gap: 4px;
+  align-items: center;
 }

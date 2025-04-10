@@ -7,6 +7,9 @@ export interface MessageRecord {
   sender?: string;
   recipient?: string;
   orderNumber?: string;
+  styleData?: {
+    wordStyles: Record<string, { fontSize: number }>;
+  };
   [key: string]: string | undefined | {
     wordStyles: Record<string, { fontSize: number }>;
   };
@@ -32,6 +35,9 @@ export const parseCsv = (csvString: string): MessageRecord[] => {
       sender: record.sender,
       recipient: record.recipient,
       orderNumber: record.orderNumber || record.order,
+      styleData: {
+        wordStyles: {}
+      }
     };
   });
 };

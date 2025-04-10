@@ -1,11 +1,32 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import MessageCardsContainer from './components/MessageCardsContainer';
 import { Toaster } from './components/ui/toaster';
+import { MessageRecord } from './utils/csvParser';
 
 function App() {
-  const [foldedCard, setFoldedCard] = useState<boolean>(true); // Default to true for folded card
+  const [foldedCard, setFoldedCard] = useState<boolean>(true);
+  const [messages, setMessages] = useState<MessageRecord[]>([]);
+
+  // Load saved messages when app starts
+  useEffect(() => {
+    try {
+      const savedMessages = localStorage.getItem('cardMessages');
+      if (savedMessages) {
+        const parsedMessages = JSON.parse(savedMessages);
+        console.log('App: Loaded messages from localStorage:', parsedMessages.length);
+        setMessages(parsedMessages);
+      }
+    } catch (error) {
+      console.error('Error loading saved messages:', error);
+    }
+  }, []);
+
+  // Debug messages state changes
+  useEffect(() => {
+    console.log('App: Messages state updated, count:', messages.length);
+  }, [messages]);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -19,7 +40,9 @@ function App() {
       <div className="container mx-auto px-4 pb-12">
         <MessageCardsContainer 
           foldedCard={foldedCard} 
-          setFoldedCard={setFoldedCard} 
+          setFoldedCard={setFoldedCard}
+          initialMessages={messages}
+          onMessagesUpdate={setMessages}
         />
       </div>
       

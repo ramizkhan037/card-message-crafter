@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import MessageCard from './MessageCard';
 import FileUploader from './FileUploader';
 import CardSettings from './CardSettings';
-import { MessageRecord, parseCSV, downloadSampleCSV } from '@/utils/csvParser';
+import { MessageRecord } from '@/utils/csvParser';
 import { toast } from '@/hooks/use-toast';
 
 // Enhanced MessageRecord interface with style data
@@ -16,9 +16,16 @@ interface EnhancedMessageRecord extends MessageRecord {
 interface MessageCardsContainerProps {
   foldedCard?: boolean;
   setFoldedCard?: (folded: boolean) => void;
+  initialMessages?: MessageRecord[];
+  onMessagesUpdate?: (messages: MessageRecord[]) => void;
 }
 
-const MessageCardsContainer = ({ foldedCard = true, setFoldedCard }: MessageCardsContainerProps) => {
+const MessageCardsContainer = ({ 
+  foldedCard = true, 
+  setFoldedCard,
+  initialMessages = [],
+  onMessagesUpdate
+}: MessageCardsContainerProps) => {
   // State for card settings
   const [cardWidth, setCardWidth] = useState(95);
   const [cardHeight, setCardHeight] = useState(190);
@@ -33,6 +40,47 @@ const MessageCardsContainer = ({ foldedCard = true, setFoldedCard }: MessageCard
   // State for messages with enhanced type
   const [messages, setMessages] = useState<EnhancedMessageRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Load initial messages or from localStorage
+  useEffect(() => {
+    console.log('MessageCardsContainer: initialMessages passed in:', initialMessages);
+    
+    if (initialMessages && initialMessages.length > 0) {
+      console.log('Using initialMessages:', initialMessages);
+      setMessages(initialMessages as EnhancedMessageRecord[]);
+    } else {
+      // Try loading from localStorage if no initialMessages provided
+      const savedMessages = localStorage.getItem('cardMessages');
+      if (savedMessages) {
+        try {
+          const parsedMessages = JSON.parse(savedMessages);
+          console.log('Loaded messages from localStorage:', parsedMessages);
+          setMessages(parsedMessages);
+        } catch (error) {
+          console.error('Error loading saved messages:', error);
+          toast({
+            title: "Error",
+            description: "Failed to load saved messages",
+            variant: "destructive",
+          });
+        }
+      }
+    }
+  }, [initialMessages]);
+  
+  // Update parent component when messages change
+  useEffect(() => {
+    if (onMessagesUpdate && messages.length > 0) {
+      console.log('MessageCardsContainer: Updating parent with messages:', messages.length);
+      onMessagesUpdate(messages);
+    }
+    
+    // Save to localStorage whenever messages change
+    if (messages.length > 0) {
+      console.log('Saving messages to localStorage:', messages.length);
+      localStorage.setItem('cardMessages', JSON.stringify(messages));
+    }
+  }, [messages, onMessagesUpdate]);
   
   // Handle file upload
   const handleMessagesUpload = (uploadedMessages: MessageRecord[]) => {
@@ -66,25 +114,6 @@ const MessageCardsContainer = ({ foldedCard = true, setFoldedCard }: MessageCard
       description: `${uploadedMessages.length} messages have been loaded successfully.`,
     });
   };
-  
-  // Load messages from localStorage on initial render
-  useEffect(() => {
-    const savedMessages = localStorage.getItem('cardMessages');
-    if (savedMessages) {
-      try {
-        const parsedMessages = JSON.parse(savedMessages);
-        console.log('Loaded messages from localStorage:', parsedMessages);
-        setMessages(parsedMessages);
-      } catch (error) {
-        console.error('Error loading saved messages:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load saved messages",
-          variant: "destructive",
-        });
-      }
-    }
-  }, []);
   
   // Handle message update with style data
   const handleMessageUpdate = (id: string, updatedMessage: string, styleData?: any) => {
@@ -197,7 +226,7 @@ const MessageCardsContainer = ({ foldedCard = true, setFoldedCard }: MessageCard
               Upload a CSV file to get started. The file should contain columns for 'message', 'sender', and 'recipient'.
             </p>
             <button 
-              onClick={() => downloadSampleCSV()} 
+              onClick={() => import('@/utils/csvParser').then(({ downloadSampleCSV }) => downloadSampleCSV())} 
               className="text-blue-500 underline text-sm mb-4"
             >
               Download a sample CSV file

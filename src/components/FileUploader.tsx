@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Upload, FileDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { downloadSampleCSV, parseCSV, MessageRecord } from '@/utils/csvParser';
 
 interface FileUploaderProps {
@@ -11,7 +11,6 @@ interface FileUploaderProps {
 }
 
 const FileUploader = ({ onUpload, isLoading = false }: FileUploaderProps) => {
-  const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
   
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,18 +43,20 @@ const FileUploader = ({ onUpload, isLoading = false }: FileUploaderProps) => {
     });
     
     try {
+      console.log('Starting CSV parsing...');
       const messages = await parseCSV(file);
-      console.log('Parsed Messages from FileUploader:', messages); // Debug log
-      
+      console.log('Parsing complete. Messages:', messages); // Debug log
+
       if (messages && messages.length > 0) {
-        console.log('Calling onUpload with messages:', messages);
+        console.log('Number of messages loaded:', messages.length);
+        console.log('Sample message:', JSON.stringify(messages[0]));
         onUpload(messages);
         toast({
           title: "Success",
           description: `Loaded ${messages.length} messages successfully`,
         });
       } else {
-        console.error('No messages found in file');
+        console.error('No messages found in file or messages array is empty');
         toast({
           title: "Warning",
           description: "No messages found in the uploaded file",

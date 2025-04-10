@@ -32,7 +32,7 @@ export const parseCsv = (csvString: string): MessageRecord[] => {
   console.log('Raw parsed records:', records); // Debug logging
   
   return records.map((record, index) => {
-    const messageRecord = {
+    const messageRecord: MessageRecord = {
       id: `msg-${index}-${Date.now()}`,
       message: record.message || '',
       sender: record.sender,
@@ -93,9 +93,6 @@ export const downloadSampleCSV = () => {
   document.body.removeChild(link);
 };
 
-// Export both parseCSV and parseCsv for backward compatibility
-export default {
-  parseCsv,
-  parseCSV,
-  downloadSampleCSV
-};
+// Make sure we're exporting both the functions and the default object correctly
+export { parseCsv, parseCSV, downloadSampleCSV };
+export default { parseCsv, parseCSV, downloadSampleCSV };

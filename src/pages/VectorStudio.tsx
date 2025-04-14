@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import VectorEditor from '@/components/VectorEditor';
 import { Button } from '@/components/ui/button';
@@ -6,12 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { FileDown, FileUp, Save, Settings, Home } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
 
 const VectorStudio: React.FC = () => {
   const [canvasWidth, setCanvasWidth] = useState<number>(800);
   const [canvasHeight, setCanvasHeight] = useState<number>(600);
   const [projectName, setProjectName] = useState<string>('Untitled Project');
   const [showSettings, setShowSettings] = useState<boolean>(false);
+  const { toast } = useToast();
 
   const handleCreateNewCanvas = () => {
     // Reset canvas with new dimensions
@@ -24,6 +27,10 @@ const VectorStudio: React.FC = () => {
     setTimeout(() => {
       setCanvasWidth(tempWidth);
       setCanvasHeight(tempHeight);
+      toast({
+        title: "Canvas Updated",
+        description: `New canvas size: ${tempWidth}×${tempHeight}px`,
+      });
     }, 50);
   };
 
@@ -44,6 +51,7 @@ const VectorStudio: React.FC = () => {
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
               className="max-w-[200px]"
+              aria-label="Project name"
             />
             <Button variant="outline" onClick={() => setShowSettings(!showSettings)}>
               <Settings className="mr-2" size={16} />

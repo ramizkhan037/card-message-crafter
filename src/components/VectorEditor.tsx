@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { fabric } from 'fabric';
 import { Button } from '@/components/ui/button';
@@ -106,7 +107,7 @@ const VectorEditor: React.FC<VectorEditorProps> = ({
 
   // Update canvas size when props change
   useEffect(() => {
-    if (canvasInstanceRef.current) {
+    if (canvasInstanceRef.current && (width > 0 && height > 0)) {
       canvasInstanceRef.current.setWidth(width);
       canvasInstanceRef.current.setHeight(height);
       canvasInstanceRef.current.renderAll();
@@ -306,7 +307,6 @@ const VectorEditor: React.FC<VectorEditorProps> = ({
       canvasInstanceRef.current.setActiveObject(path);
     }
     canvasInstanceRef.current.renderAll();
-
   };
   
   // Finish drawing the path
@@ -511,6 +511,9 @@ const VectorEditor: React.FC<VectorEditorProps> = ({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    
+    // Clean up
+    URL.revokeObjectURL(url);
   };
   
   const handleExportPNG = () => {
@@ -544,8 +547,10 @@ const VectorEditor: React.FC<VectorEditorProps> = ({
     const reader = new FileReader();
     
     reader.onload = (event) => {
+      if (!event.target || typeof event.target.result !== 'string') return;
+      
       const imgObj = new Image();
-      imgObj.src = event.target?.result as string;
+      imgObj.src = event.target.result;
       imgObj.onload = () => {
         const image = new fabric.Image(imgObj, {
           left: 100,

@@ -77,6 +77,11 @@ const VectorEditor: React.FC<VectorEditorProps> = ({
         height,
         backgroundColor: '#ffffff',
         preserveObjectStacking: true,
+        isDrawingMode: false,
+        // Enable text editing
+        selection: true,
+        selectionBorderColor: 'rgba(0,0,0,0.3)',
+        selectionLineWidth: 1
       });
       
       canvasInstanceRef.current = canvas;
@@ -92,6 +97,14 @@ const VectorEditor: React.FC<VectorEditorProps> = ({
       canvas.on('mouse:down', handleMouseDown);
       canvas.on('mouse:move', handleMouseMove);
       canvas.on('mouse:up', handleMouseUp);
+      
+      // Enable text editing with double click
+      canvas.on('mouse:dblclick', (options) => {
+        if (options.target && options.target.type === 'textbox') {
+          options.target.enterEditing();
+          options.target.selectAll();
+        }
+      });
       
       // Save initial state
       saveCanvasState();
@@ -124,6 +137,11 @@ const VectorEditor: React.FC<VectorEditorProps> = ({
       setStrokeWidth(selection.strokeWidth || 1);
       if (selection.type === 'textbox') {
         setFontSize((selection as fabric.Textbox).fontSize as number || 20);
+        // Ensure text editing is enabled
+        (selection as fabric.Textbox).set({
+          editable: true,
+          selectable: true
+        });
       }
       setOpacity(selection.opacity ? selection.opacity * 100 : 100);
     }
@@ -391,10 +409,20 @@ const VectorEditor: React.FC<VectorEditorProps> = ({
       fill: fillColor,
       fontFamily: 'Arial',
       width: 200,
+      editable: true,
+      editingBorderColor: '#03a9f4',
+      cursorWidth: 2,
+      cursorColor: '#333',
+      selectionColor: 'rgba(3, 169, 244, 0.3)',
+      lockMovementX: false,
+      lockMovementY: false
     });
     
     canvasInstanceRef.current.add(text);
     canvasInstanceRef.current.setActiveObject(text);
+    // Immediately enter editing mode
+    text.enterEditing();
+    text.selectAll();
   };
   
   const handleDeleteSelected = () => {
